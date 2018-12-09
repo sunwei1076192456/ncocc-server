@@ -46,8 +46,9 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         path = path.substring(basePath.length());
         Set<String> notLoginPaths = new HashSet<String>();
         //设置不进行登录拦截的路径：登录注册和验证码
-        notLoginPaths.add("/ncocc/userManger/login.do");
+        notLoginPaths.add("/userManger/login.do");
         if(notLoginPaths.contains(path)) return false;
         return true;
     }
+
 }
