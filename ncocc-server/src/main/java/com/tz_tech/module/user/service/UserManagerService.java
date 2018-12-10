@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -20,6 +21,13 @@ public class UserManagerService {
     @Autowired
     private UserDao userDao;
 
+    /**
+     * 登录校验
+     * @param user
+     * @param request
+     * @return
+     * @throws Exception
+     */
     public Result login(User user, HttpServletRequest request) throws Exception{
         Result loginResult = Result.fail();
         HttpSession session = request.getSession();
@@ -61,6 +69,12 @@ public class UserManagerService {
         return loginResult;
     }
 
+    /**
+     * 通过Token获取当前登录用户的中文名
+     * @param request
+     * @return
+     * @throws Exception
+     */
     public Result getUserByToken(HttpServletRequest request) throws Exception{
         Result loginResult = Result.fail();
         Map<String,Object> data = new HashMap<String, Object>();
@@ -73,6 +87,23 @@ public class UserManagerService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return loginResult;
+    }
+
+    /**
+     *通过自身权限查找这个组下的所有用户
+     * (现在只用于管理员)
+     * @param paramMap
+     * @return
+     * @throws Exception
+     */
+    public Result queryAllUserByAuth(Map<String,Object> paramMap) throws Exception{
+        Result loginResult = Result.fail();
+        //判断当前用户是否是管理员
+       /* boolean isManager = false;
+        List<Map<String, Object>> roleList = userDao.
+                qryUserRoleByUserName(MapUtils.getString(paramMap,"userName"));*/
+
         return loginResult;
     }
 }
