@@ -11,5 +11,6 @@ public interface UserDao
 	public List<Map<String, Object>> qryUserRoleByUserName(String userName) throws Exception;
 
 	/*public List<>*/
+	public List<Map<String, Object>> qryAllUserByLoginName(Map<String, Object> paramMap) throws Exception;
 
 }

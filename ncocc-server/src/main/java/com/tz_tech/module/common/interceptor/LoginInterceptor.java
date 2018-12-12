@@ -21,6 +21,10 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
         Map<String, Claim> userInfo = null;
+        if("".equals(request.getHeader("Authorization")) || null == request.getHeader("Authorization")){
+            response.sendError(401);
+            return false;
+        }
         String[] Token = request.getHeader("Authorization").split("\\s+");//以空格分隔
         try {
             userInfo = TokenUtils.verifyToken(Token[1]);

@@ -98,12 +98,18 @@ public class UserManagerService {
      * @throws Exception
      */
     public Result queryAllUserByAuth(Map<String,Object> paramMap) throws Exception{
-        Result loginResult = Result.fail();
+        Result result = Result.fail();
         //判断当前用户是否是管理员
        /* boolean isManager = false;
         List<Map<String, Object>> roleList = userDao.
                 qryUserRoleByUserName(MapUtils.getString(paramMap,"userName"));*/
 
-        return loginResult;
+        //已用户名模糊查询
+        List<Map<String, Object>> userList = userDao.qryAllUserByLoginName(paramMap);
+        Map<String,Object> data = new HashMap<String, Object>();
+        data.put("user",userList);
+        data.put("totalCount",userList.size());
+        result = Result.success(data);
+        return result;
     }
 }

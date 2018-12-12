@@ -53,4 +53,28 @@ public class UserDaoImpl extends CommonDao implements UserDao
 		paramMap.put("userName",userName);
 		return super.queryForList(sb.toString(),paramMap);
 	}
+
+	@Override
+	public List<Map<String, Object>> qryAllUserByLoginName(Map<String, Object> paramMap) throws Exception {
+		StringBuffer sb = new StringBuffer();
+		/*Map<String,Object> paramMap = new HashMap<String,Object>();*/
+		sb.append(" select su.login_name as loginName, su.phone as phone,su.name as name,");
+		sb.append(" (case when sr.role='management' then 0 when sr.role='financial_department' then 1 ");
+		sb.append(" when sr.role='dispatcher' then 2 when sr.role='operator' then 3 else 4 end) ");
+		sb.append(" as usertype from sys_user su");
+		sb.append(" left join sys_user_role sur on sur.user_login_name=su.login_name ");
+		sb.append(" left join sys_role sr on sr.id = sur.role_id ");
+		if(null != MapUtils.getString(paramMap,"state")){
+			sb.append(" where su.active=:state");
+		}else{
+			sb.append(" where su.active in (0,1)");
+		}
+		if(null != MapUtils.getString(paramMap,"loginName")){
+			sb.append(" and su.login_name like CONCAT('%',:loginName,'%')");
+		}
+		if(null != MapUtils.getString(paramMap,"userType")){
+			sb.append(" and sr.role=:userType");
+		}
+		return super.queryForList(sb.toString(),paramMap);
+	}
 }

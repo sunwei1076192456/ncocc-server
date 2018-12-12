@@ -34,12 +34,14 @@ public class UserManagerController {
     @RequestMapping(value = "/queryAllUserByAuth.do",method = RequestMethod.GET)
     @ResponseBody
     public Result queryAllUserByAuth(@RequestParam("loginName") String loginName, @RequestParam("page") String page,
-                                     @RequestParam("pageSize") String pageSize,
-                                     HttpServletRequest request) throws Exception{
+                                     @RequestParam("pageSize") String pageSize, @RequestParam("state") String state,
+                                     @RequestParam("role") String role) throws Exception{
         Map<String,Object> paramMap = new HashMap<String, Object>();
         paramMap.put("loginName",loginName);
         paramMap.put("page",page);
         paramMap.put("pageSize",pageSize);
+        paramMap.put("state",state);
+        paramMap.put("userType",role);
 //        paramMap.put("userName",userName);
         return userManagerService.queryAllUserByAuth(paramMap);
     }
