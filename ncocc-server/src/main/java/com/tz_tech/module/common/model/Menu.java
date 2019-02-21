@@ -1,8 +1,9 @@
 package com.tz_tech.module.common.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Menu {
+public class Menu implements Serializable {
 
     /**
      * 菜单ID

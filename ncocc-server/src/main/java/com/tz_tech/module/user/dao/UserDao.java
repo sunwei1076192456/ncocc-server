@@ -13,4 +13,16 @@ public interface UserDao
 	/*public List<>*/
 	public List<Map<String, Object>> qryAllUserByLoginName(Map<String, Object> paramMap) throws Exception;
 
+	public int addUser(User user) throws Exception;
+
+	public Long qryAllUserCount(Map<String, Object> paramMap) throws Exception;
+
+	public int delUserById(String ids) throws Exception;
+
+	public int delUserRolesById(String ids) throws Exception;
+
+	public boolean checkUserExist(String loginName) throws Exception;
+
+	public int modifyUser(User user) throws Exception;
+
 }
