@@ -34,6 +34,8 @@ import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SetOperationList;
 
+import javax.sql.DataSource;
+
 public class CommonDao
 {
     private static Logger logger = Logger.getLogger(CommonDao.class);
@@ -43,15 +45,15 @@ public class CommonDao
     private static final String SQL_DOT_TAG = ".";
     private static final String SQL_SPACE_TAG = " ";
 
-    protected JdbcOperations getJdbcOperations() {
+    public JdbcOperations getJdbcOperations() {
         return getParameterJdbcTemplate().getJdbcOperations();
     }
 
-    protected void setCacheLimit(int cacheLimit) {
+    public void setCacheLimit(int cacheLimit) {
         getParameterJdbcTemplate().setCacheLimit(cacheLimit);
     }
 
-    protected int getCacheLimit() {
+    public int getCacheLimit() {
         return getParameterJdbcTemplate().getCacheLimit();
     }
 
@@ -62,18 +64,24 @@ public class CommonDao
         return namedParameterJdbcTemplate;
     }
 
+    public CommonDao setDataSource(DataSource ds) {
+        NamedParameterJdbcTemplate templete = new NamedParameterJdbcTemplate(ds);
+        this.namedParameterJdbcTemplate = templete;
+        return this;
+    }
+
     public void setParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
-    protected <T> T execute(String sql, SqlParameterSource paramSource, PreparedStatementCallback<T> action) throws DataAccessException {
+    public <T> T execute(String sql, SqlParameterSource paramSource, PreparedStatementCallback<T> action) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + paramSource + ";PreparedStatementCallback is " + action);
         return getParameterJdbcTemplate().execute(sql, paramSource, action);
 
     }
 
-    protected <T> T execute(String sql, Map<String, ?> paramMap, PreparedStatementCallback<T> action)
+    public <T> T execute(String sql, Map<String, ?> paramMap, PreparedStatementCallback<T> action)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap + ";PreparedStatementCallback is " + action);
@@ -81,79 +89,79 @@ public class CommonDao
 
     }
 
-    protected <T> T execute(String sql, PreparedStatementCallback<T> action) throws DataAccessException {
+    public <T> T execute(String sql, PreparedStatementCallback<T> action) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print PreparedStatementCallback is ----:" + action);
         return getParameterJdbcTemplate().execute(sql, action);
 
     }
 
-    protected <T> T execute(CallableStatementCreator csc, CallableStatementCallback<T> action) {
+    public <T> T execute(CallableStatementCreator csc, CallableStatementCallback<T> action) {
         logger.info("print CallableStatementCreator is ----:" + csc + ";CallableStatementCallback is " + action);
         return getParameterJdbcTemplate().getJdbcOperations().execute(csc, action);
 
     }
 
-    protected <T> T query(String sql, SqlParameterSource paramSource, ResultSetExtractor<T> rse)
+    public <T> T query(String sql, SqlParameterSource paramSource, ResultSetExtractor<T> rse)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + paramSource + ";ResultSetExtractor is " + rse);
         return getParameterJdbcTemplate().query(sql, paramSource, rse);
     }
 
-    protected <T> T query(String sql, Map<String, ?> paramMap, ResultSetExtractor<T> rse)
+    public <T> T query(String sql, Map<String, ?> paramMap, ResultSetExtractor<T> rse)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap + ";ResultSetExtractor is " + rse);
         return getParameterJdbcTemplate().query(sql, paramMap, rse);
     }
 
-    protected <T> T query(String sql, ResultSetExtractor<T> rse) throws DataAccessException {
+    public <T> T query(String sql, ResultSetExtractor<T> rse) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print ResultSetExtractor is ----:" + rse);
         return getParameterJdbcTemplate().query(sql, rse);
     }
 
-    protected void query(String sql, SqlParameterSource paramSource, RowCallbackHandler rch)
+    public void query(String sql, SqlParameterSource paramSource, RowCallbackHandler rch)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + paramSource + ";RowCallbackHandler is " + rch);
         getParameterJdbcTemplate().query(sql, paramSource, rch);
     }
 
-    protected void query(String sql, Map<String, ?> paramMap, RowCallbackHandler rch)
+    public void query(String sql, Map<String, ?> paramMap, RowCallbackHandler rch)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap + ";RowCallbackHandler is " + rch);
         getParameterJdbcTemplate().query(sql, paramMap, rch);
     }
 
-    protected void query(String sql, RowCallbackHandler rch) throws DataAccessException {
+    public void query(String sql, RowCallbackHandler rch) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print RowCallbackHandler is " + rch);
         getParameterJdbcTemplate().query(sql, rch);
     }
 
-    protected <T> List<T> query(String sql, SqlParameterSource paramSource, RowMapper<T> rowMapper)
+    public <T> List<T> query(String sql, SqlParameterSource paramSource, RowMapper<T> rowMapper)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
         return getParameterJdbcTemplate().query(sql, paramSource, rowMapper);
     }
 
-    protected <T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper)
+    public <T> List<T> query(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
         return getParameterJdbcTemplate().query(sql, paramMap, rowMapper);
     }
 
-    protected <T> List<T> query(String sql, RowMapper<T> rowMapper) throws DataAccessException {
+    public <T> List<T> query(String sql, RowMapper<T> rowMapper) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         return getParameterJdbcTemplate().query(sql, rowMapper);
     }
 
-    protected <T> T queryForObject(String sql, SqlParameterSource paramSource, RowMapper<T> rowMapper)
+    public <T> T queryForObject(String sql, SqlParameterSource paramSource, RowMapper<T> rowMapper)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
@@ -164,7 +172,7 @@ public class CommonDao
         }
     }
 
-    protected <T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper)
+    public <T> T queryForObject(String sql, Map<String, ?> paramMap, RowMapper<T> rowMapper)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
@@ -175,7 +183,7 @@ public class CommonDao
         }
     }
 
-    protected <T> T queryForObject(String sql, SqlParameterSource paramSource, Class<T> requiredType)
+    public <T> T queryForObject(String sql, SqlParameterSource paramSource, Class<T> requiredType)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
@@ -186,7 +194,7 @@ public class CommonDao
         }
     }
 
-    protected <T> T queryForObject(String sql, Map<String, ?> paramMap, Class<T> requiredType)
+    public <T> T queryForObject(String sql, Map<String, ?> paramMap, Class<T> requiredType)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
@@ -198,7 +206,7 @@ public class CommonDao
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Object> queryForMap(String sql, SqlParameterSource paramSource) throws DataAccessException {
+    public Map<String, Object> queryForMap(String sql, SqlParameterSource paramSource) throws DataAccessException {
         final String[] propNoAs = propNameForQryColStr(sql);
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
@@ -224,7 +232,7 @@ public class CommonDao
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Object> queryForMap(String sql, Map<String, ?> paramMap) throws DataAccessException {
+    public Map<String, Object> queryForMap(String sql, Map<String, ?> paramMap) throws DataAccessException {
         final String[] propNoAs = propNameForQryColStr(sql);
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
@@ -249,14 +257,14 @@ public class CommonDao
         }
     }
 
-    protected <T> List<T> queryForList(String sql, SqlParameterSource paramSource, Class<T> elementType)
+    public <T> List<T> queryForList(String sql, SqlParameterSource paramSource, Class<T> elementType)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
         return getParameterJdbcTemplate().queryForList(sql, paramSource, elementType);
     }
 
-    protected <T> List<T> queryForList(String sql, Map<String, ?> paramMap, Class<T> elementType)
+    public <T> List<T> queryForList(String sql, Map<String, ?> paramMap, Class<T> elementType)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
@@ -264,7 +272,7 @@ public class CommonDao
     }
 
     @SuppressWarnings("unchecked")
-    protected List<Map<String, Object>> queryForList(String sql, SqlParameterSource paramSource)
+    public List<Map<String, Object>> queryForList(String sql, SqlParameterSource paramSource)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
@@ -283,7 +291,7 @@ public class CommonDao
     }
 
     @SuppressWarnings("unchecked")
-    protected List<Map<String, Object>> queryForList(String sql, Map<String, ?> paramMap)
+    public List<Map<String, Object>> queryForList(String sql, Map<String, ?> paramMap)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
@@ -301,38 +309,38 @@ public class CommonDao
         }
     }
 
-    protected SqlRowSet queryForRowSet(String sql, SqlParameterSource paramSource) throws DataAccessException {
+    public SqlRowSet queryForRowSet(String sql, SqlParameterSource paramSource) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
         return getParameterJdbcTemplate().queryForRowSet(sql, paramSource);
     }
 
-    protected SqlRowSet queryForRowSet(String sql, Map<String, ?> paramMap) throws DataAccessException {
+    public SqlRowSet queryForRowSet(String sql, Map<String, ?> paramMap) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
         return getParameterJdbcTemplate().queryForRowSet(sql, paramMap);
     }
 
-    protected int update(String sql, SqlParameterSource paramSource) throws DataAccessException {
+    public int update(String sql, SqlParameterSource paramSource) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
         return getParameterJdbcTemplate().update(sql, paramSource);
     }
 
-    protected int update(String sql, Map<String, ?> paramMap) throws DataAccessException {
+    public int update(String sql, Map<String, ?> paramMap) throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
         return getParameterJdbcTemplate().update(sql, paramMap);
     }
 
-    protected int update(String sql, SqlParameterSource paramSource, KeyHolder generatedKeyHolder)
+    public int update(String sql, SqlParameterSource paramSource, KeyHolder generatedKeyHolder)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramSource is ----:" + (paramSource instanceof MapSqlParameterSource ? ((MapSqlParameterSource)paramSource).getValues() : paramSource));
         return getParameterJdbcTemplate().update(sql, paramSource, generatedKeyHolder);
     }
 
-    protected int update(
+    public int update(
             String sql, SqlParameterSource paramSource, KeyHolder generatedKeyHolder, String[] keyColumnNames)
             throws DataAccessException {
         logger.info("print sql is ----:" + sql);
@@ -340,25 +348,25 @@ public class CommonDao
         return getParameterJdbcTemplate().update(sql, paramSource, generatedKeyHolder, keyColumnNames);
     }
 
-    protected int[] batchUpdate(String sql, Map<String, ?>[] batchValues) {
+    public int[] batchUpdate(String sql, Map<String, ?>[] batchValues) {
         logger.info("print sql is ----:" + sql);
         logger.info("print batchValues is ----:" + batchValues);
         return getParameterJdbcTemplate().batchUpdate(sql, batchValues);
     }
 
-    protected int[] batchUpdate(String sql, SqlParameterSource[] batchArgs) {
+    public int[] batchUpdate(String sql, SqlParameterSource[] batchArgs) {
         logger.info("print sql is ----:" + sql);
         logger.info("print batchArgs is ----:" + batchArgs);
         return getParameterJdbcTemplate().batchUpdate(sql, batchArgs);
     }
 
-    protected int queryForInt(String sql, Map<String, ?> paramMap) {
+    public int queryForInt(String sql, Map<String, ?> paramMap) {
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap);
         return getParameterJdbcTemplate().queryForObject(sql, paramMap, Integer.class);
     }
 
-    protected Long getSequence(String sequenceName) {
+    public Long getSequence(String sequenceName) {
         String sql = "select " + sequenceName + ".nextval from dual";
         logger.info("print sql is ----:" + sql);
         try {
@@ -368,7 +376,7 @@ public class CommonDao
         }
     }
 
-    /*protected <T> Page<T> queryForPage(String sql, Map<String, ?> paramMap, int pageIndex, int pageSize) throws SystemException, RequiredException, SQLException {
+    /*public <T> Page<T> queryForPage(String sql, Map<String, ?> paramMap, int pageIndex, int pageSize) throws SystemException, RequiredException, SQLException {
         String countSql = "select count(1) from (" + sql + ")";
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap + ":pageIndex is " + pageIndex + ":pageSize is " + pageSize);
@@ -397,7 +405,7 @@ public class CommonDao
         return new Page<T>(retList, pageSize, count, pageIndex);
     }*/
 
-   /* protected <T> Page<T> queryForPage(String sql, SqlParameterSource paramMap, int pageIndex, int pageSize) throws SystemException, RequiredException, SQLException {
+   /* public <T> Page<T> queryForPage(String sql, SqlParameterSource paramMap, int pageIndex, int pageSize) throws SystemException, RequiredException, SQLException {
         String countSql = "select count(1) from (" + sql + ")";
         logger.info("print sql is ----:" + sql);
         logger.info("print paramMap is ----:" + paramMap + ":pageIndex is " + pageIndex + ":pageSize is " + pageSize);

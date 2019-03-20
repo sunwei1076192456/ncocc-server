@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/testm1552148523646" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="m1552148523646" name="" targetNamespace="http://www.activiti.org/testm1552148523646" typeLanguage="http://www.w3.org/2001/XMLSchema">
+  <process id="unpackProcess_1" isClosed="false" isExecutable="true" name="拆箱流程" processType="None">
+    <startEvent id="_2" name="开始"/>
+    <serviceTask activiti:exclusive="true" activiti:expression="#{activityService.receiveOrder(execution)}" id="HB-CZ-JD" name="接单"/>
+    <sequenceFlow id="_4" sourceRef="_2" targetRef="HB-CZ-JD"/>
+    <userTask activiti:exclusive="true" id="HB-CZ-SH" name="操作经理审核"/>
+    <sequenceFlow id="_6" sourceRef="HB-CZ-JD" targetRef="HB-CZ-SH"/>
+    <exclusiveGateway gatewayDirection="Unspecified" id="HB-FZ"/>
+    <serviceTask activiti:exclusive="true" activiti:expression="#{activityService.receiveOrder(execution)}" id="HB-CZ-TD" name="退单"/>
+    <serviceTask activiti:exclusive="true" activiti:expression="#{activityService.receiveOrder(execution)}" id="HB-CZ-HD" name="换单"/>
+    <sequenceFlow id="_10" name="审核通过" sourceRef="HB-FZ" targetRef="HB-CZ-HD">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isPass==0}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="_11" sourceRef="HB-CZ-SH" targetRef="HB-FZ"/>
+    <sequenceFlow id="_12" name="审核不通过" sourceRef="HB-FZ" targetRef="HB-CZ-TD">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isPass==1}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="_13" name="结束"/>
+    <sequenceFlow id="_14" sourceRef="HB-CZ-HD" targetRef="_13"/>
+    <sequenceFlow id="_15" sourceRef="HB-CZ-TD" targetRef="_13"/>
+  </process>
+  <bpmndi:BPMNDiagram documentation="background=#FFFFFF;count=1;horizontalcount=1;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+    <bpmndi:BPMNPlane bpmnElement="unpackProcess_1">
+      <bpmndi:BPMNShape bpmnElement="_2" id="Shape-_2">
+        <dc:Bounds height="32.0" width="32.0" x="130.0" y="20.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="HB-CZ-JD" id="Shape-HB-CZ-JD">
+        <dc:Bounds height="55.0" width="85.0" x="105.0" y="105.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="85.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="HB-CZ-SH" id="Shape-HB-CZ-SH">
+        <dc:Bounds height="55.0" width="105.0" x="95.0" y="175.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="105.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="HB-FZ" id="Shape-HB-FZ" isMarkerVisible="false">
+        <dc:Bounds height="32.0" width="32.0" x="130.0" y="245.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="HB-CZ-TD" id="Shape-HB-CZ-TD">
+        <dc:Bounds height="55.0" width="85.0" x="245.0" y="335.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="85.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="HB-CZ-HD" id="Shape-HB-CZ-HD">
+        <dc:Bounds height="55.0" width="85.0" x="110.0" y="335.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="55.0" width="85.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="_13" id="Shape-_13">
+        <dc:Bounds height="32.0" width="32.0" x="135.0" y="415.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="_12" id="BPMNEdge__12" sourceElement="HB-FZ" targetElement="HB-CZ-TD">
+        <di:waypoint x="162.0" y="261.0"/>
+        <di:waypoint x="285.0" y="305.0"/>
+        <di:waypoint x="285.0" y="335.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_15" id="BPMNEdge__15" sourceElement="HB-CZ-TD" targetElement="_13">
+        <di:waypoint x="285.0" y="390.0"/>
+        <di:waypoint x="285.0" y="385.0"/>
+        <di:waypoint x="167.0" y="431.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_14" id="BPMNEdge__14" sourceElement="HB-CZ-HD" targetElement="_13">
+        <di:waypoint x="151.0" y="390.0"/>
+        <di:waypoint x="151.0" y="415.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_4" id="BPMNEdge__4" sourceElement="_2" targetElement="HB-CZ-JD">
+        <di:waypoint x="146.0" y="52.0"/>
+        <di:waypoint x="146.0" y="105.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_6" id="BPMNEdge__6" sourceElement="HB-CZ-JD" targetElement="HB-CZ-SH">
+        <di:waypoint x="147.5" y="160.0"/>
+        <di:waypoint x="147.5" y="175.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_11" id="BPMNEdge__11" sourceElement="HB-CZ-SH" targetElement="HB-FZ">
+        <di:waypoint x="146.0" y="230.0"/>
+        <di:waypoint x="146.0" y="245.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="_10" id="BPMNEdge__10" sourceElement="HB-FZ" targetElement="HB-CZ-HD">
+        <di:waypoint x="146.0" y="277.0"/>
+        <di:waypoint x="146.0" y="335.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds height="0.0" width="0.0" x="0.0" y="0.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

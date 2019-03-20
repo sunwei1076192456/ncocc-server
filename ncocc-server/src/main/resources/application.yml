@@ -10,9 +10,12 @@ spring:
   datasource:
     hikari:
       driver-class-name: com.mysql.jdbc.Driver
-      jdbc-url: jdbc:mysql://localhost:3306/ncocc
-      username: root
-      password: sw123456
+      #jdbc-url: jdbc:mysql://localhost:3306/ncocc
+      jdbc-url: jdbc:mysql://59.110.243.160:3306/hbdba
+      #username: root
+      username: testmysql
+      #password: sw123456
+      password: 123123mysqlTU
       maximum-pool-size: 10
       minimum-idle: 5
   devtools:
