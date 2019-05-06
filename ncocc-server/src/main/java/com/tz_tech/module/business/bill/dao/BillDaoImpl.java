@@ -1,8 +1,10 @@
 package com.tz_tech.module.business.bill.dao;
 
+import com.google.common.collect.ImmutableMap;
 import com.tz_tech.module.common.dao.CommonDao;
 import com.tz_tech.module.common.model.Bill;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.List;
@@ -11,9 +13,98 @@ import java.util.Map;
 @Repository
 public class BillDaoImpl extends CommonDao implements BillDao {
 
+    /**
+     * ff_order
+     * 业务主表-参数名和数据库表名的对应关系，用于构造sql
+     */
+    private static final Map<String, String> ffOrderColumnPairs = ImmutableMap.<String,String>builder()
+            .put("id"			           , "id"			        )
+            .put("create_by" 	           , "create_by"	        )
+//            .put("remark"		           , "remark"			    )
+//            .put("status_id"			   , "status_id"	        )
+            .put("businesstype_code"       , "businesstype_code"   )
+            .put("customer_id"		       , "customer_id"		    )
+            .put("shipping_id"	           , "shipping_id"		    )
+            .put("forecastsailingdate"	   , "forecastsailingdate"	)
+            .put("sailingdate"	           , "sailingdate"		    )
+            .put("shipname_code"	       , "shipname_code"	    )
+            .put("voyage"	               , "voyage"		        )
+            .put("waybill"	               , "waybill"		        )
+            .put("tradetype_code"	       , "tradetype_code"       )
+            .put("protocoltype_code"	   , "protocoltype_code"    )
+            .put("packingtype_code"	       , "packingtype_code"		)
+            .put("containerweight"	       , "containerweight"		)
+            .put("productname"	           , "productname"		    )
+            .put("productweight"	       , "productweight"	    )
+            .put("productvolume"	       , "productvolume"	    )
+            .put("productnubmer"	       , "productnubmer"		)
+            .build();
+
+    /**
+     * ff_container_info
+     * 箱体表-参数名和数据库表名的对应关系，用于构造sql
+     */
+    private static final Map<String, String> ffContainerInfoColumnPairs = ImmutableMap.<String,String>builder()
+//            .put("id"			           , "id"			            )
+            .put("containernumber" 	       , "containernumber"	        )
+            .put("containerbelong_code"	   , "containerbelong_code"		)
+            .put("containertype_code"	   , "containertype_code"	     )
+            .put("sealnumber"              , "sealnumber"                )
+            .put("detention"		       , "detention"		         )
+            .put("draw_container_addr"	   , "draw_container_addr"	     )
+            .put("return_container_addr"   , "return_container_addr"	 )
+            .put("draw_container_time"	   , "draw_container_time"		 )
+            .put("return_container_time"   , "return_container_time"	 )
+            .put("demurrage"	           , "demurrage"		         )
+            .put("port_container_time"	   , "port_container_time"		 )
+            .put("ship_container_time"	   , "ship_container_time"       )
+            .put("remark"	               , "remark"                    )
+            .build();
+
+    /**
+     * ff_handling_info
+     * 装卸信息表-参数名和数据库表名的对应关系，用于构造sql
+     */
+    private static final Map<String, String> ffHandlingInfoColumnPairs = ImmutableMap.<String,String>builder()
+//            .put("id"			           , "id"			            )
+            .put("loading_goods_addr" 	   , "loading_goods_addr"	    )
+            .put("unloading_goods_addr"	   , "unloading_goods_addr"		)
+            .put("start_time"	           , "start_time"	            )
+            .put("end_time"                , "end_time"                )
+            .put("is_deduction"		       , "is_deduction"		        )
+            .put("is_urgent"	           , "is_urgent"	            )
+            .put("is_delay"                , "is_delay"	                )
+            .put("contact"	               , "contact"		            )
+            .put("contact_res"             , "contact_res"	            )
+            .put("iphone"	               , "iphone"		            )
+            .put("iphone_res"	           , "iphone_res"		        )
+            .put("handle_remark"	       , "handle_remark"            )
+            .build();
+
+
     @Override
-    public int saveBill(Bill bill) throws Exception {
-        StringBuffer sb = new StringBuffer();
+    public int saveBill(Map<String,Object> bill) throws Exception {
+        StringBuffer cloumStr = new StringBuffer();
+        StringBuffer valueStr = new StringBuffer();
+        cloumStr.append(" insert into ff_order(create_at,status_id ");
+        valueStr.append(" values(SYSDATE(),'10I' ");
+        for(String oneKey : bill.keySet()){
+            if(ffOrderColumnPairs.containsKey(oneKey)){
+                cloumStr.append(",")
+                        .append(ffOrderColumnPairs.get(oneKey) + " ");
+                if("forecastsailingdate".equals(oneKey) ||
+                        "sailingdate".equals(oneKey)){
+                    valueStr.append(",")
+                            .append("str_to_date(:" + oneKey + ",'%Y-%m-%d') ");
+                }else{
+                    valueStr.append(",")
+                            .append(":" + oneKey + " ");
+                }
+            }
+        }
+
+
+        /*StringBuffer sb = new StringBuffer();
         sb.append(" insert into ff_order(id,create_by,create_at,");
         sb.append(" remark,status_id,businesstype_code,customer_id,shipping_id,sailingdate,");
         sb.append(" shipname_code,voyage,containerbelong_code,containertype_code,protocoltype_code,");
@@ -25,8 +116,8 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" :waybill,:containernumber,:deliveryplace_code,:sealnumber,:packingtype_code,");
         sb.append(" :productname,:productweight,:productvolume,:productnubmer,:is_agent,:demurrage,");
         sb.append(" :detention,:detentiontype_code,:is_deduction,:loadingdate,:district_id,:loadingdetile_id,:contact_id)");
-
-        Map<String,Object> paramMap = new HashMap<String, Object>();
+*/
+        /*Map<String,Object> paramMap = new HashMap<String, Object>();
         paramMap.put("id",bill.getId());
         paramMap.put("create_by",bill.getCreate_by());
         paramMap.put("remark",bill.getRemark());
@@ -57,17 +148,69 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         paramMap.put("loadingdate",bill.getLoadingdate());
         paramMap.put("district_id",bill.getDistrict_id());
         paramMap.put("loadingdetile_id",bill.getLoadingdetile_id());
-        paramMap.put("contact_id",bill.getContact_id());
-        return super.update(sb.toString(),paramMap);
+        paramMap.put("contact_id",bill.getContact_id());*/
+
+        cloumStr.append(") ");
+        valueStr.append(") ");
+        return super.update(cloumStr.append(valueStr).toString(),bill);
     }
 
     @Override
-    public int updateOrderForInstId(Bill bill) throws Exception {
+    public int saveBillContainer(Map<String, Object> paramMap) throws Exception {
+        StringBuffer cloumStr = new StringBuffer();
+        StringBuffer valueStr = new StringBuffer();
+        cloumStr.append(" insert into ff_container_info(id ");
+        valueStr.append(" values(:id ");
+        for(String oneKey : paramMap.keySet()){
+            if(ffContainerInfoColumnPairs.containsKey(oneKey)){
+                cloumStr.append(",")
+                        .append(ffContainerInfoColumnPairs.get(oneKey) + " ");
+                if(("draw_container_time".equals(oneKey) && !"".equals(MapUtils.getString(paramMap,"oneKey",""))) ||
+                        ("draw_container_time".equals(oneKey) && !"".equals(MapUtils.getString(paramMap,"oneKey",""))) ||
+                        ("port_container_time".equals(oneKey) && !"".equals(MapUtils.getString(paramMap,"oneKey",""))) ||
+                        ("ship_container_time".equals(oneKey) && !"".equals(MapUtils.getString(paramMap,"oneKey","")))){
+                    valueStr.append(",")
+                            .append("str_to_date(:" + oneKey + ",'%Y-%m-%d %H:%i:%s') ");
+                }else{
+                    valueStr.append(",")
+                            .append(":" + oneKey + " ");
+                }
+            }
+        }
+        cloumStr.append(") ");
+        valueStr.append(") ");
+        return super.update(cloumStr.append(valueStr).toString(),paramMap);
+    }
+
+    @Override
+    public int saveBillHand(Map<String, Object> paramMap) throws Exception {
+        StringBuffer cloumStr = new StringBuffer();
+        StringBuffer valueStr = new StringBuffer();
+        cloumStr.append(" insert into ff_handling_info(id ");
+        valueStr.append(" values(:id ");
+        for(String oneKey : paramMap.keySet()){
+            if(ffHandlingInfoColumnPairs.containsKey(oneKey)){
+                cloumStr.append(",")
+                        .append(ffHandlingInfoColumnPairs.get(oneKey) + " ");
+                if(("start_time".equals(oneKey) && !"".equals(MapUtils.getString(paramMap,"oneKey",""))) ||
+                        ("end_time".equals(oneKey) && !"".equals(MapUtils.getString(paramMap,"oneKey","")))){
+                    valueStr.append(",")
+                            .append("str_to_date(:" + oneKey + ",'%Y-%m-%d %H:%i:%s') ");
+                }else{
+                    valueStr.append(",")
+                            .append(":" + oneKey + " ");
+                }
+            }
+        }
+        cloumStr.append(") ");
+        valueStr.append(") ");
+        return super.update(cloumStr.append(valueStr).toString(),paramMap);
+    }
+
+    @Override
+    public int updateOrderForInstId(Map<String,Object> bill) throws Exception {
         String sql = "update ff_order set status_id='10N',processInstanceId=:processInstanceId where id=:id ";
-        Map<String,Object> paramMap = new HashMap<String, Object>();
-        paramMap.put("processInstanceId",bill.getProcessInstanceId());
-        paramMap.put("id",bill.getId());
-        return super.update(sql,paramMap);
+        return super.update(sql,bill);
     }
 
     @Override
@@ -105,28 +248,72 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         return super.update(sb.toString(),paramMap);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Map<String, Object>> queryBillsByLoginName(Map<String, Object> paramMap) throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(" select id,create_by,create_at,updated_by,updated_at,remark,");
+        sb.append(" select workOrderId,id,create_by,create_at,");
         sb.append(" status_id,businesstype_code,customer_id,shipping_id,sailingdate,");
+        sb.append(" shipname_code,voyage,containerbelong_code,");
+        sb.append(" waybill,containernumber,containertype_code,unloading_goods_addr,contact,iphone,");
+        sb.append(" status,cusabbreviation,shipabbreviation from (");
+        sb.append(" select woi.id as workOrderId,oo.id,oo.create_by,oo.create_at,");
+        sb.append(" oo.status_id,oo.businesstype_code,oo.customer_id,oo.shipping_id,date_format(oo.sailingdate,'%Y-%m-%d') as sailingdate,");
+        sb.append(" oo.shipname_code,oo.voyage,oo.waybill,");
+        sb.append(" fci.containernumber,fci.containertype_code,fci.containerbelong_code,");
+        sb.append(" sa.address_abbr as unloading_goods_addr,fhi.contact,fhi.iphone,");
+        sb.append(" dtd.tache_name as status,uc.abbreviation as cusabbreviation,us.abbreviation as shipabbreviation from ff_work_order_ing woi ");
+        sb.append(" left join ff_order oo on woi.order_id=oo.id ");
+        sb.append(" left join dict_tache_define dtd on dtd.tache_id=woi.tache_id ");
+        sb.append(" left join user_customer uc on uc.id=oo.customer_id ");
+        sb.append(" left join user_shipping us on us.id=oo.shipping_id ");
+        sb.append(" left join ff_container_info fci on fci.id=oo.id ");
+        sb.append(" left join ff_handling_info fhi on fhi.id=oo.id ");
+        sb.append(" left join sys_addr sa on sa.addr_id=fhi.unloading_goods_addr");
+        String role = MapUtils.getString(paramMap,"role","");
+        switch (role){
+            case "management":
+                sb.append(" where 1=1 ");
+                break;
+            case "operatorLeader":
+                sb.append(" where 1=1 ");//---后续已区域来区分，每个调度经理能看到各自区域下的单子
+                break;
+            case "operator":
+                sb.append(" where woi.executor_id=:loginName ");
+                break;
+        }
+        if(!"".equals(MapUtils.getString(paramMap,"waybill",""))){
+            sb.append(" and oo.waybill like '%" + MapUtils.getString(paramMap,"waybill") + "%' ");
+        }
+        sb.append(") as lo limit :fromPageSize,:pageSize ");
+        paramMap.put("fromPageSize",(MapUtils.getLong(paramMap,"page")-1)*MapUtils.getLong(paramMap,"pageSize"));
+        return super.queryForList(sb.toString(),paramMap);
+    }
+
+    public List<Map<String, Object>> queryBillsDetailById(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select id,create_by,create_at,updated_by,updated_at,remark,");
+        sb.append(" status_id,businesstype_code,customer_id,shipping_id,forecastsailingdate,sailingdate,");
         sb.append(" shipname_code,voyage,containerbelong_code,containertype_code,");
-        sb.append(" protocoltype_code,waybill,containernumber,deliveryplace_code,");
+        sb.append(" protocoltype_code,waybill,containernumber,");
         sb.append(" sealnumber,packingtype_code,productname,productweight,productvolume,");
-        sb.append(" productnubmer,is_agent,demurrage,detention,detentiontype_code,");
-        sb.append(" is_deduction,loadingdate,district_id,loadingdetile_id,contact_id,processInstanceId,status,cusabbreviation,shipabbreviation from (");
+        sb.append(" productnubmer,demurrage,detention,");
+        sb.append(" is_deduction,contact_id,processInstanceId,status,cusabbreviation,shipabbreviation from (");
         sb.append(" select oo.id,oo.create_by,oo.create_at,oo.updated_by,oo.updated_at,oo.remark,");
-        sb.append(" oo.status_id,oo.businesstype_code,oo.customer_id,oo.shipping_id,oo.sailingdate,");
-        sb.append(" oo.shipname_code,oo.voyage,oo.containerbelong_code,oo.containertype_code,");
-        sb.append(" oo.protocoltype_code,oo.waybill,oo.containernumber,oo.deliveryplace_code,");
-        sb.append(" oo.sealnumber,oo.packingtype_code,oo.productname,oo.productweight,oo.productvolume,");
-        sb.append(" oo.productnubmer,oo.is_agent,oo.demurrage,oo.detention,oo.detentiontype_code,");
-        sb.append(" oo.is_deduction,oo.loadingdate,oo.district_id,oo.loadingdetile_id,oo.contact_id,");
+        sb.append(" oo.status_id,oo.businesstype_code,oo.customer_id,oo.shipping_id,oo.forecastsailingdate,oo.sailingdate,");
+        sb.append(" oo.shipname_code,oo.voyage,oo.waybill,oo.tradetype_code,oo.protocoltype_code,oo.packingtype_code,");
+        sb.append(" oo.containerweight,oo.productname,oo.productweight,oo.productvolume,oo.productnubmer,oo.processInstanceId,");
+        sb.append(" fci.containernumber,fci.containerbelong_code,fci.containertype_code,fci.sealnumber,fci.detention,");
+        sb.append(" draw_container_addr,oo.demurrage,oo.detention,");
+        sb.append(" oo.is_deduction,oo.contact_id,");
         sb.append(" oo.processInstanceId,dtd.tache_name as status,uc.abbreviation as cusabbreviation,us.abbreviation as shipabbreviation from ff_work_order_ing woi ");
         sb.append(" left join ff_order oo on woi.order_id=oo.id ");
         sb.append(" left join dict_tache_define dtd on dtd.tache_id=woi.tache_id ");
         sb.append(" left join user_customer uc on uc.id=oo.customer_id ");
         sb.append(" left join user_shipping us on us.id=oo.shipping_id ");
+        sb.append(" left join ff_container_info fci on fci.id=oo.id ");
+        sb.append(" left join ff_handling_info fhi on fhi.id=oo.id ");
+        sb.append(" left join sys_addr sa on sa.addr_id=fci.");
         sb.append(" where woi.executor_id=:loginName");
         sb.append(") as lo limit :fromPageSize,:pageSize ");
         paramMap.put("fromPageSize",(MapUtils.getLong(paramMap,"page")-1)*MapUtils.getLong(paramMap,"pageSize"));
@@ -139,7 +326,21 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" select count(1) ");
         sb.append(" from ff_work_order_ing woi ");
         sb.append(" left join ff_order oo on woi.order_id=oo.id ");
-        sb.append(" where woi.executor_id=:loginName");
+        String role = MapUtils.getString(paramMap,"role","");
+        switch (role){
+            case "management":
+                sb.append(" where 1=1 ");
+                break;
+            case "operatorLeader":
+                sb.append(" where 1=1 ");
+                break;       //---后续已区域来区分，每个调度经理能看到各自区域下的单子
+            case "operator":
+                sb.append(" where woi.executor_id=:loginName ");
+                break;
+        }
+        if(!"".equals(MapUtils.getString(paramMap,"waybill",""))){
+            sb.append(" and oo.waybill like '%" + MapUtils.getString(paramMap,"waybill") + "%' ");
+        }
         return super.queryForObject(sb.toString(),paramMap,Long.class);
     }
 
@@ -154,8 +355,33 @@ public class BillDaoImpl extends CommonDao implements BillDao {
     @Override
     public List<Map<String, Object>> queryAllShipInfo() throws Exception {
         StringBuffer sb = new StringBuffer();
-        sb.append(" select id,abbreviation,mnemonic,name,address,contact,telephone");
+        sb.append(" select id as value,abbreviation,mnemonic,name,address,contact,telephone");
         sb.append(" from user_shipping ");
         return super.queryForList(sb.toString(),new HashMap<String, Object>());
     }
+
+    @Override
+    public List<Map<String, Object>> queryDictById(Long id) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select dpd.id as value,dpd.name as label ");
+        sb.append(" from dict_public_detail dpd,dict_public dp ");
+        sb.append(" where dpd.public_id=dp.id and dp.id=:id and is_display=1");
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("id",id);
+        return super.queryForList(sb.toString(),paramMap);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryAddrInfo(Long areaId) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        sb.append(" select addr_id as value,factory_name as label,district_id ");
+        sb.append(" from sys_addr ");
+        if(areaId != null){
+            sb.append(" where district_id=:areaId");
+            paramMap.put("areaId",areaId);
+        }
+        return super.queryForList(sb.toString(),paramMap);
+    }
+
 }

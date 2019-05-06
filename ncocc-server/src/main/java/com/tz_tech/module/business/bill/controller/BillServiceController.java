@@ -25,7 +25,14 @@ public class BillServiceController {
     @RequestMapping(value = "/saveBill.do")
     @ResponseBody
     public Result saveBill(@RequestBody(required=false) Bill bill, HttpServletRequest request)throws Exception{
-        return billService.saveBill(bill);
+        Result result = Result.fail();
+        try {
+            result = billService.saveBill(bill);
+        } catch (Exception e) {
+            e.getStackTrace();
+            result.setResultMsg("单据入库失败!");
+        }
+        return result;
     }
 
     /**
@@ -35,11 +42,12 @@ public class BillServiceController {
     @RequestMapping(value = "/queryBillByIng.do",method = RequestMethod.GET)
     @ResponseBody
     public Result queryBillByLoginName(@RequestParam("loginName") String loginName,  @RequestParam("page") String page,
-                                       @RequestParam("pageSize") String pageSize,HttpServletRequest request)throws Exception{
+                                       @RequestParam("pageSize") String pageSize,@RequestParam(value="waybill",required=false) String waybill, HttpServletRequest request)throws Exception{
         Map<String,Object> paramMap = new HashMap<String, Object>();
         paramMap.put("loginName",loginName);
         paramMap.put("page",Long.valueOf(page));
         paramMap.put("pageSize",Long.valueOf(pageSize));
+        paramMap.put("waybill",waybill);
         return billService.queryBillByLoginName(paramMap);
     }
 

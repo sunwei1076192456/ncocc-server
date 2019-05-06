@@ -1,6 +1,7 @@
 package com.tz_tech.module;
 
 import com.tz_tech.module.business.flow.RegisterServiceRepository;
+import com.tz_tech.module.common.utils.BaseInfoLoadFromDB;
 import org.activiti.spring.boot.SecurityAutoConfiguration;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,5 +19,8 @@ public class Application implements CommandLineRunner {
         //启动生产者消费者模式不断扫描流程表
         RegisterServiceRepository repository = new RegisterServiceRepository();
         repository.init();
+        //从数据库里加载一些数据缓存起来
+        BaseInfoLoadFromDB load = new BaseInfoLoadFromDB();
+        load.init();
     }
 }

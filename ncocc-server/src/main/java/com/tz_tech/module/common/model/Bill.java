@@ -11,9 +11,13 @@ public class Bill implements Serializable {
 
     private String create_by;
 
+    private Date create_at;
+
     private String updated_by;
 
-    private String remark;
+    private Date updated_at;
+
+//    private String remark;
 
     private String status_id;
 
@@ -23,28 +27,24 @@ public class Bill implements Serializable {
 
     private int shipping_id;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private Date sailingdate;
+//    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private String sailingdate;
+
+    private String forecastsailingdate;
 
     private int shipname_code;
 
     private String voyage;
 
-    private int containerbelong_code;
+    private String waybill;
 
-    private int containertype_code;
+    private int tradetype_code;
 
     private int protocoltype_code;
 
-    private String waybill;
-
-    private String containernumber;
-
-    private int deliveryplace_code;
-
-    private String sealnumber;
-
     private int packingtype_code;
+
+    private int containerweight;
 
     private String productname;
 
@@ -54,26 +54,55 @@ public class Bill implements Serializable {
 
     private BigDecimal productnubmer;
 
-    private int is_agent;
+    private int containerbelong_code;
 
-    private int demurrage;
+    private int containertype_code;
+
+    private String containernumber;
+
+    private String sealnumber;
 
     private int detention;
 
-    private int detentiontype_code;
+    private int draw_container_addr;
+
+    private int return_container_addr;
+
+    private String draw_container_time;
+
+    private String return_container_time;
+
+    private int demurrage;
+
+    private String port_container_time;
+
+    private String ship_container_time;
+
+    private String remark;
+
+    private int loading_goods_addr;
+
+    private int unloading_goods_addr;
+
+    private String start_time;
+
+    private String end_time;
 
     private int is_deduction;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private Date loadingdate;
+    private int is_urgent;
 
-    private int district_id;
+    private int is_delay;
 
-    private int loadingdetile_id;
+    private String contact;
 
-    private int contact_id;
+    private String contact_res;
 
-    private String processInstanceId;
+    private String iphone;
+
+    private String iphone_res;
+
+    private String handle_remark;
 
     public String getId() {
         return id;
@@ -91,6 +120,14 @@ public class Bill implements Serializable {
         this.create_by = create_by;
     }
 
+    public Date getCreate_at() {
+        return create_at;
+    }
+
+    public void setCreate_at(Date create_at) {
+        this.create_at = create_at;
+    }
+
     public String getUpdated_by() {
         return updated_by;
     }
@@ -99,12 +136,12 @@ public class Bill implements Serializable {
         this.updated_by = updated_by;
     }
 
-    public String getRemark() {
-        return remark;
+    public Date getUpdated_at() {
+        return updated_at;
     }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
 
     public String getStatus_id() {
@@ -139,6 +176,22 @@ public class Bill implements Serializable {
         this.shipping_id = shipping_id;
     }
 
+    public String getSailingdate() {
+        return sailingdate;
+    }
+
+    public void setSailingdate(String sailingdate) {
+        this.sailingdate = sailingdate;
+    }
+
+    public String getForecastsailingdate() {
+        return forecastsailingdate;
+    }
+
+    public void setForecastsailingdate(String forecastsailingdate) {
+        this.forecastsailingdate = forecastsailingdate;
+    }
+
     public int getShipname_code() {
         return shipname_code;
     }
@@ -155,20 +208,20 @@ public class Bill implements Serializable {
         this.voyage = voyage;
     }
 
-    public int getContainerbelong_code() {
-        return containerbelong_code;
+    public String getWaybill() {
+        return waybill;
     }
 
-    public void setContainerbelong_code(int containerbelong_code) {
-        this.containerbelong_code = containerbelong_code;
+    public void setWaybill(String waybill) {
+        this.waybill = waybill;
     }
 
-    public int getContainertype_code() {
-        return containertype_code;
+    public int getTradetype_code() {
+        return tradetype_code;
     }
 
-    public void setContainertype_code(int containertype_code) {
-        this.containertype_code = containertype_code;
+    public void setTradetype_code(int tradetype_code) {
+        this.tradetype_code = tradetype_code;
     }
 
     public int getProtocoltype_code() {
@@ -179,44 +232,20 @@ public class Bill implements Serializable {
         this.protocoltype_code = protocoltype_code;
     }
 
-    public String getWaybill() {
-        return waybill;
-    }
-
-    public void setWaybill(String waybill) {
-        this.waybill = waybill;
-    }
-
-    public String getContainernumber() {
-        return containernumber;
-    }
-
-    public void setContainernumber(String containernumber) {
-        this.containernumber = containernumber;
-    }
-
-    public int getDeliveryplace_code() {
-        return deliveryplace_code;
-    }
-
-    public void setDeliveryplace_code(int deliveryplace_code) {
-        this.deliveryplace_code = deliveryplace_code;
-    }
-
-    public String getSealnumber() {
-        return sealnumber;
-    }
-
-    public void setSealnumber(String sealnumber) {
-        this.sealnumber = sealnumber;
-    }
-
     public int getPackingtype_code() {
         return packingtype_code;
     }
 
     public void setPackingtype_code(int packingtype_code) {
         this.packingtype_code = packingtype_code;
+    }
+
+    public int getContainerweight() {
+        return containerweight;
+    }
+
+    public void setContainerweight(int containerweight) {
+        this.containerweight = containerweight;
     }
 
     public String getProductname() {
@@ -251,20 +280,36 @@ public class Bill implements Serializable {
         this.productnubmer = productnubmer;
     }
 
-    public int getIs_agent() {
-        return is_agent;
+    public int getContainerbelong_code() {
+        return containerbelong_code;
     }
 
-    public void setIs_agent(int is_agent) {
-        this.is_agent = is_agent;
+    public void setContainerbelong_code(int containerbelong_code) {
+        this.containerbelong_code = containerbelong_code;
     }
 
-    public int getDemurrage() {
-        return demurrage;
+    public int getContainertype_code() {
+        return containertype_code;
     }
 
-    public void setDemurrage(int demurrage) {
-        this.demurrage = demurrage;
+    public void setContainertype_code(int containertype_code) {
+        this.containertype_code = containertype_code;
+    }
+
+    public String getContainernumber() {
+        return containernumber;
+    }
+
+    public void setContainernumber(String containernumber) {
+        this.containernumber = containernumber;
+    }
+
+    public String getSealnumber() {
+        return sealnumber;
+    }
+
+    public void setSealnumber(String sealnumber) {
+        this.sealnumber = sealnumber;
     }
 
     public int getDetention() {
@@ -275,12 +320,100 @@ public class Bill implements Serializable {
         this.detention = detention;
     }
 
-    public int getDetentiontype_code() {
-        return detentiontype_code;
+    public int getDraw_container_addr() {
+        return draw_container_addr;
     }
 
-    public void setDetentiontype_code(int detentiontype_code) {
-        this.detentiontype_code = detentiontype_code;
+    public void setDraw_container_addr(int draw_container_addr) {
+        this.draw_container_addr = draw_container_addr;
+    }
+
+    public int getReturn_container_addr() {
+        return return_container_addr;
+    }
+
+    public void setReturn_container_addr(int return_container_addr) {
+        this.return_container_addr = return_container_addr;
+    }
+
+    public String getDraw_container_time() {
+        return draw_container_time;
+    }
+
+    public void setDraw_container_time(String draw_container_time) {
+        this.draw_container_time = draw_container_time;
+    }
+
+    public String getReturn_container_time() {
+        return return_container_time;
+    }
+
+    public void setReturn_container_time(String return_container_time) {
+        this.return_container_time = return_container_time;
+    }
+
+    public int getDemurrage() {
+        return demurrage;
+    }
+
+    public void setDemurrage(int demurrage) {
+        this.demurrage = demurrage;
+    }
+
+    public String getPort_container_time() {
+        return port_container_time;
+    }
+
+    public void setPort_container_time(String port_container_time) {
+        this.port_container_time = port_container_time;
+    }
+
+    public String getShip_container_time() {
+        return ship_container_time;
+    }
+
+    public void setShip_container_time(String ship_container_time) {
+        this.ship_container_time = ship_container_time;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public int getLoading_goods_addr() {
+        return loading_goods_addr;
+    }
+
+    public void setLoading_goods_addr(int loading_goods_addr) {
+        this.loading_goods_addr = loading_goods_addr;
+    }
+
+    public int getUnloading_goods_addr() {
+        return unloading_goods_addr;
+    }
+
+    public void setUnloading_goods_addr(int unloading_goods_addr) {
+        this.unloading_goods_addr = unloading_goods_addr;
+    }
+
+    public String getStart_time() {
+        return start_time;
+    }
+
+    public void setStart_time(String start_time) {
+        this.start_time = start_time;
+    }
+
+    public String getEnd_time() {
+        return end_time;
+    }
+
+    public void setEnd_time(String end_time) {
+        this.end_time = end_time;
     }
 
     public int getIs_deduction() {
@@ -291,53 +424,60 @@ public class Bill implements Serializable {
         this.is_deduction = is_deduction;
     }
 
-
-    public int getDistrict_id() {
-        return district_id;
+    public int getIs_urgent() {
+        return is_urgent;
     }
 
-    public void setDistrict_id(int district_id) {
-        this.district_id = district_id;
+    public void setIs_urgent(int is_urgent) {
+        this.is_urgent = is_urgent;
     }
 
-    public int getLoadingdetile_id() {
-        return loadingdetile_id;
+    public int getIs_delay() {
+        return is_delay;
     }
 
-    public void setLoadingdetile_id(int loadingdetile_id) {
-        this.loadingdetile_id = loadingdetile_id;
+    public void setIs_delay(int is_delay) {
+        this.is_delay = is_delay;
     }
 
-    public int getContact_id() {
-        return contact_id;
+    public String getContact() {
+        return contact;
     }
 
-    public void setContact_id(int contact_id) {
-        this.contact_id = contact_id;
+    public void setContact(String contact) {
+        this.contact = contact;
     }
 
-    public Date getSailingdate() {
-        return sailingdate;
+    public String getContact_res() {
+        return contact_res;
     }
 
-    public void setSailingdate(Date sailingdate) {
-        this.sailingdate = sailingdate;
+    public void setContact_res(String contact_res) {
+        this.contact_res = contact_res;
     }
 
-    public Date getLoadingdate() {
-        return loadingdate;
+    public String getIphone() {
+        return iphone;
     }
 
-    public void setLoadingdate(Date loadingdate) {
-        this.loadingdate = loadingdate;
+    public void setIphone(String iphone) {
+        this.iphone = iphone;
     }
 
-    public String getProcessInstanceId() {
-        return processInstanceId;
+    public String getIphone_res() {
+        return iphone_res;
     }
 
-    public void setProcessInstanceId(String processInstanceId) {
-        this.processInstanceId = processInstanceId;
+    public void setIphone_res(String iphone_res) {
+        this.iphone_res = iphone_res;
+    }
+
+    public String getHandle_remark() {
+        return handle_remark;
+    }
+
+    public void setHandle_remark(String handle_remark) {
+        this.handle_remark = handle_remark;
     }
 
     @Override
@@ -345,37 +485,51 @@ public class Bill implements Serializable {
         return "Bill{" +
                 "id='" + id + '\'' +
                 ", create_by='" + create_by + '\'' +
+                ", create_at=" + create_at +
                 ", updated_by='" + updated_by + '\'' +
-                ", remark='" + remark + '\'' +
+                ", updated_at=" + updated_at +
                 ", status_id='" + status_id + '\'' +
                 ", businesstype_code=" + businesstype_code +
                 ", customer_id=" + customer_id +
                 ", shipping_id=" + shipping_id +
-                ", sailingdate=" + sailingdate +
+                ", sailingdate='" + sailingdate + '\'' +
+                ", forecastsailingdate='" + forecastsailingdate + '\'' +
                 ", shipname_code=" + shipname_code +
                 ", voyage='" + voyage + '\'' +
-                ", containerbelong_code=" + containerbelong_code +
-                ", containertype_code=" + containertype_code +
-                ", protocoltype_code=" + protocoltype_code +
                 ", waybill='" + waybill + '\'' +
-                ", containernumber='" + containernumber + '\'' +
-                ", deliveryplace_code=" + deliveryplace_code +
-                ", sealnumber='" + sealnumber + '\'' +
+                ", tradetype_code=" + tradetype_code +
+                ", protocoltype_code=" + protocoltype_code +
                 ", packingtype_code=" + packingtype_code +
+                ", containerweight=" + containerweight +
                 ", productname='" + productname + '\'' +
                 ", productweight=" + productweight +
                 ", productvolume=" + productvolume +
                 ", productnubmer=" + productnubmer +
-                ", is_agent=" + is_agent +
-                ", demurrage=" + demurrage +
+                ", containerbelong_code=" + containerbelong_code +
+                ", containertype_code=" + containertype_code +
+                ", containernumber='" + containernumber + '\'' +
+                ", sealnumber='" + sealnumber + '\'' +
                 ", detention=" + detention +
-                ", detentiontype_code=" + detentiontype_code +
+                ", draw_container_addr=" + draw_container_addr +
+                ", return_container_addr=" + return_container_addr +
+                ", draw_container_time='" + draw_container_time + '\'' +
+                ", return_container_time='" + return_container_time + '\'' +
+                ", demurrage=" + demurrage +
+                ", port_container_time='" + port_container_time + '\'' +
+                ", ship_container_time='" + ship_container_time + '\'' +
+                ", remark='" + remark + '\'' +
+                ", loading_goods_addr=" + loading_goods_addr +
+                ", unloading_goods_addr=" + unloading_goods_addr +
+                ", start_time='" + start_time + '\'' +
+                ", end_time='" + end_time + '\'' +
                 ", is_deduction=" + is_deduction +
-                ", loadingdate=" + loadingdate +
-                ", district_id=" + district_id +
-                ", loadingdetile_id=" + loadingdetile_id +
-                ", contact_id=" + contact_id +
-                ", processInstanceId='" + processInstanceId + '\'' +
+                ", is_urgent=" + is_urgent +
+                ", is_delay=" + is_delay +
+                ", contact='" + contact + '\'' +
+                ", contact_res='" + contact_res + '\'' +
+                ", iphone='" + iphone + '\'' +
+                ", iphone_res='" + iphone_res + '\'' +
+                ", handle_remark='" + handle_remark + '\'' +
                 '}';
     }
 }

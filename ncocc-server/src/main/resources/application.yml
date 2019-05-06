@@ -11,11 +11,11 @@ spring:
     hikari:
       driver-class-name: com.mysql.jdbc.Driver
       #jdbc-url: jdbc:mysql://localhost:3306/ncocc
-      jdbc-url: jdbc:mysql://59.110.243.160:3306/hbdba
+      jdbc-url: jdbc:mysql://47.101.49.251:3306/hbdba
       #username: root
-      username: testmysql
+      username: remote
       #password: sw123456
-      password: 123123mysqlTU
+      password: 123123Mysql
       maximum-pool-size: 10
       minimum-idle: 5
   devtools:
