@@ -32,4 +32,6 @@ public interface BillDao {
     public int saveBillContainer(Map<String,Object> paramMap) throws Exception;
 
     public int saveBillHand(Map<String,Object> paramMap) throws Exception;
+
+//    public Map<String,Object> queryDispatcherParty()throws Exception;
 }
