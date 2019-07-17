@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -42,12 +43,14 @@ public class BillServiceController {
     @RequestMapping(value = "/queryBillByIng.do",method = RequestMethod.GET)
     @ResponseBody
     public Result queryBillByLoginName(@RequestParam("loginName") String loginName,  @RequestParam("page") String page,
-                                       @RequestParam("pageSize") String pageSize,@RequestParam(value="waybill",required=false) String waybill, HttpServletRequest request)throws Exception{
+                                       @RequestParam("pageSize") String pageSize,@RequestParam(value="waybill",required=false) String waybill, @RequestParam(value="tacheId",required=false) String tacheId,
+                                       HttpServletRequest request)throws Exception{
         Map<String,Object> paramMap = new HashMap<String, Object>();
         paramMap.put("loginName",loginName);
         paramMap.put("page",Long.valueOf(page));
         paramMap.put("pageSize",Long.valueOf(pageSize));
         paramMap.put("waybill",waybill);
+        paramMap.put("tacheId",tacheId);
         return billService.queryBillByLoginName(paramMap);
     }
 
@@ -61,6 +64,37 @@ public class BillServiceController {
     @ResponseBody
     public Result queryCommonInfo(HttpServletRequest request)throws Exception{
         return billService.queryCommonInfo();
+    }
+
+    /**
+     * 确认接单-按钮
+     * @param groupId
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/confirmAcceptOrder.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result confirmAcceptOrder(@RequestBody List<String> groupId, HttpServletRequest request) throws Exception{
+        return billService.confirmAcceptOrder(groupId);
+    }
+
+    /**
+     * 调度审核确定按钮
+     * @param groupId
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/dispatcherAudit.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result dispatcherAudit(@RequestBody Map<String,Object> paramMap, HttpServletRequest request) throws Exception{
+        /*Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("auditResult",auditResult);
+        paramMap.put("auditNote",auditNote);
+        paramMap.put("orderId",orderId);
+        paramMap.put("workOrderId",workOrderId);*/
+        return billService.confirmDispatcherAudit(paramMap);
     }
 
 }

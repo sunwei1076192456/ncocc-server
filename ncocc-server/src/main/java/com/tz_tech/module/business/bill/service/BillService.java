@@ -4,9 +4,12 @@ import com.tz_tech.module.business.activity.service.ActivityService;
 import com.tz_tech.module.business.bill.dao.BillDao;
 import com.tz_tech.module.common.model.Bill;
 import com.tz_tech.module.common.model.Result;
+import com.tz_tech.module.common.utils.BaseInfoLoadFromDB;
 import com.tz_tech.module.common.utils.MapHelper;
 import com.tz_tech.module.user.dao.UserDao;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,9 @@ public class BillService {
 
     @Autowired
     private ActivityService activityService;
+
+    private static final Logger log = Logger.getLogger(BillService.class);
+
 
     @Transactional(rollbackFor = Exception.class)
     public Result saveBill(Bill bill) throws Exception{
@@ -120,6 +126,51 @@ public class BillService {
         Date currDate = cal.getTime();
         SimpleDateFormat sd = new SimpleDateFormat("yyyyMMddHHmmss");
         return  "FF" + sd.format(currDate) + "A" + num;//总长度不超过20位
+    }
+
+    public Result confirmAcceptOrder(List<String> groupId) throws Exception{
+        Result result = Result.fail();
+        if(groupId != null && groupId.size() > 0){
+            //list转为以逗号分隔的字符串
+            try {
+                String ids = StringUtils.join(groupId.toArray(), "','");
+                //查询出所有的流程实例ID
+                List<Map<String,Object>> processInstanceIdList = billdao.queryProcessInstanceIdById(ids);
+                if(null != processInstanceIdList && processInstanceIdList.size() > 0){
+                    for(Map<String,Object> temp : processInstanceIdList){
+                        String processInstanceId = MapUtils.getString(temp,"processInstanceId","");
+                        if(!"".equals(processInstanceId)){
+                            //通用回单方法,不需要指定下一环节执行人
+                            activityService.completeWorkOrder(processInstanceId,false,null);
+                            log.info("订单号【" + MapUtils.getString(temp,"id","") + "】确认接单成功！");
+                        }
+                    }
+                }
+                result = Result.success();
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.setResultMsg("接单失败!");
+            }
+        }else {
+            result.setResultMsg("请至少勾选一条记录接单!");
+        }
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Result confirmDispatcherAudit(Map<String,Object> paramMap)throws Exception{
+        Result result = Result.fail();
+        //写入审核结果 0:通过  1：不通过
+        billdao.updateWorkOrderResult(paramMap);
+
+        //回单
+        List<Map<String,Object>> processInstanceIdList = billdao.queryProcessInstanceIdById(MapUtils.getString(paramMap,"orderId"));
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("isPass",MapUtils.getInteger(paramMap,"auditResult"));
+        String processInstanceId = MapUtils.getString(processInstanceIdList.get(0),"processInstanceId","");
+        activityService.completeWorkOrder(processInstanceId,true,variables);
+        result = Result.success();
+        return result;
     }
 
 }

@@ -7,31 +7,37 @@ import java.util.Map;
 
 public interface BillDao {
 
-    public int saveBill(Map<String,Object> bill) throws Exception;
+    int saveBill(Map<String,Object> bill) throws Exception;
 
-    public int updateOrderForInstId(Map<String,Object> bill) throws Exception;
+    int updateOrderForInstId(Map<String,Object> bill) throws Exception;
 
-    public Map<String,Object> queryPartyById(String id)throws Exception;
+    Map<String,Object> queryPartyById(String id)throws Exception;
 
-    public Map<String,Object> queryTacheByActiviId(String id) throws Exception;
+    Map<String,Object> queryTacheByActiviId(String id) throws Exception;
 
-    public int insertFlowMsg(Map<String,Object> paramMap) throws Exception;
+    int insertFlowMsg(Map<String,Object> paramMap) throws Exception;
 
-    public List<Map<String,Object>> queryBillsByLoginName(Map<String, Object> paramMap) throws Exception;
+    List<Map<String,Object>> queryBillsByLoginName(Map<String, Object> paramMap) throws Exception;
 
-    public Long queryBillsCountBying(Map<String, Object> paramMap) throws Exception;
+    Long queryBillsCountBying(Map<String, Object> paramMap) throws Exception;
 
-    public List<Map<String,Object>> queryAllCusInfo()throws Exception;
+    List<Map<String,Object>> queryAllCusInfo()throws Exception;
 
-    public List<Map<String,Object>> queryAllShipInfo()throws Exception;
+    List<Map<String,Object>> queryAllShipInfo()throws Exception;
 
-    public List<Map<String,Object>> queryDictById(Long id)throws Exception;
+    List<Map<String,Object>> queryDictById(Long id)throws Exception;
 
-    public List<Map<String,Object>> queryAddrInfo(Long areaId) throws Exception;
+    List<Map<String,Object>> queryAddrInfo(Long areaId) throws Exception;
 
-    public int saveBillContainer(Map<String,Object> paramMap) throws Exception;
+    int saveBillContainer(Map<String,Object> paramMap) throws Exception;
 
-    public int saveBillHand(Map<String,Object> paramMap) throws Exception;
+    int saveBillHand(Map<String,Object> paramMap) throws Exception;
 
 //    public Map<String,Object> queryDispatcherParty()throws Exception;
+
+    List<Map<String,Object>> queryProcessInstanceIdById(String workOrderIds)throws Exception;
+
+    Map<String,Object> queryWorkOrderIdByPId(String processInstanceId)throws Exception;
+
+    void updateWorkOrderResult(Map<String,Object> paramMap)throws Exception;
 }

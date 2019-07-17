@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.tz_tech.module.business.bill.dao.BillDao;
 import com.tz_tech.module.common.adapter.ObjectTypeAdapter;
 import com.tz_tech.module.common.utils.BaseInfoLoadFromDB;
+import com.tz_tech.module.common.utils.ProcedureUtil;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -59,7 +60,8 @@ public class ActivityService {
      * @param execution
      * @throws Exception
      */
-    public void receiveOrder(DelegateExecution execution)throws Exception{
+    public Map<String,Object> receiveOrder(DelegateExecution execution)throws Exception{
+        log.info("====进入接单环节====");
         String orderId = (String) execution.getVariable("orderId");
         //查出下一环节执行人--订单表里的接单人
         Map<String,Object> party = billDao.queryPartyById(orderId);
@@ -74,6 +76,7 @@ public class ActivityService {
         paramMap.put("processInstanceId",execution.getProcessInstanceId());
         Map<String,Object> flowReq = getRequestForFlow(paramMap);
         billDao.insertFlowMsg(flowReq);
+        return party;
     }
 
     /**
@@ -81,7 +84,8 @@ public class ActivityService {
      * @param execution
      * @throws Exception
      */
-    public void dispatcherAudit(DelegateExecution execution)throws Exception{
+    public Map<String,Object> dispatcherAudit(DelegateExecution execution)throws Exception{
+        log.info("====进入调度员审核环节====");
         String orderId = (String) execution.getVariable("orderId");
         //查出下一环节执行人--调度员（多个调度员的话就随机）
         Long processInstanceId = Long.valueOf(execution.getProcessInstanceId());
@@ -98,9 +102,11 @@ public class ActivityService {
         paramMap.put("processInstanceId",execution.getProcessInstanceId());
         Map<String,Object> flowReq = getRequestForFlow(paramMap);
         billDao.insertFlowMsg(flowReq);
+        return dispatcher;
     }
 
-    public void dispatcherAssignCar(DelegateExecution execution)throws Exception{
+    public Map<String,Object> dispatcherAssignCar(DelegateExecution execution)throws Exception{
+        log.info("====进入调度员派车环节====");
         String orderId = (String) execution.getVariable("orderId");
         //查出下一环节执行人--调度员（多个调度员的话就随机）
         Long processInstanceId = Long.valueOf(execution.getProcessInstanceId());
@@ -117,6 +123,7 @@ public class ActivityService {
         paramMap.put("processInstanceId",execution.getProcessInstanceId());
         Map<String,Object> flowReq = getRequestForFlow(paramMap);
         billDao.insertFlowMsg(flowReq);
+        return dispatcher;
     }
 
     /**
@@ -143,6 +150,13 @@ public class ActivityService {
      * @throws Exception
      */
     public void completeWorkOrder(String processInstanceId,boolean hasParam,Map<String,Object> paramMap)throws Exception{
+        log.info("====【" + processInstanceId + "】进入回单方法====" );
+        //工单回单-调存过，传工单id
+        Map<String,Object> workOrder = billDao.queryWorkOrderIdByPId(processInstanceId);
+        //调用存过删除在途表,同时把工单表的状态更新为10F
+        String[] params = {MapUtils.getString(workOrder,"workOrderId"),"out_succ_flag","out_error_msg"};
+        ProcedureUtil.executeProcedure(params,2,"complete_work_order");
+
         Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
         if(hasParam){
             Map<String, Object> variables=new HashMap<String,Object>();
