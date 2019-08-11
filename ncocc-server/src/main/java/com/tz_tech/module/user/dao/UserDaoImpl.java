@@ -70,7 +70,7 @@ public class UserDaoImpl extends CommonDao implements UserDao
 		sb.append(" select id,loginName,phone,name,usertype,email from (");
 		sb.append(" select su.id,su.login_name as loginName, su.phone as phone,su.name as name,su.email,");
 		sb.append(" (case when sr.role='management' then 0 when sr.role='financial_department' then 1 ");
-		sb.append(" when sr.role='dispatcher' then 2 when sr.role='operator' then 3 else 4 end) ");
+		sb.append(" when sr.role='dispatcher' then 2 when sr.role='operator' then 3 when sr.role='dispatcher' then 2 when sr.role='vehicle_management' then 4 else 5 end) ");
 		sb.append(" as usertype from sys_user su");
 		sb.append(" left join sys_user_role sur on sur.user_login_name=su.login_name ");
 		sb.append(" left join sys_role sr on sr.id = sur.role_id ");

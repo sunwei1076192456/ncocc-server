@@ -40,4 +40,10 @@ public interface BillDao {
     Map<String,Object> queryWorkOrderIdByPId(String processInstanceId)throws Exception;
 
     void updateWorkOrderResult(Map<String,Object> paramMap)throws Exception;
+
+    List<Map<String,Object>> queryRejectReason(Map<String, Object> paramMap)throws Exception;
+
+    List<Map<String,Object>> isExistDisReject(Map<String, Object> paramMap)throws Exception;
+
+    void updateOrderState(String state,String[] orderIdList)throws Exception;
 }

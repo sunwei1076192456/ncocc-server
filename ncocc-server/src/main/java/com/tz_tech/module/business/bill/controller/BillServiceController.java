@@ -44,13 +44,14 @@ public class BillServiceController {
     @ResponseBody
     public Result queryBillByLoginName(@RequestParam("loginName") String loginName,  @RequestParam("page") String page,
                                        @RequestParam("pageSize") String pageSize,@RequestParam(value="waybill",required=false) String waybill, @RequestParam(value="tacheId",required=false) String tacheId,
-                                       HttpServletRequest request)throws Exception{
+                                       @RequestParam(value="businessType",required=false) String businessType,HttpServletRequest request)throws Exception{
         Map<String,Object> paramMap = new HashMap<String, Object>();
         paramMap.put("loginName",loginName);
         paramMap.put("page",Long.valueOf(page));
         paramMap.put("pageSize",Long.valueOf(pageSize));
         paramMap.put("waybill",waybill);
         paramMap.put("tacheId",tacheId);
+        paramMap.put("businessType",businessType);
         return billService.queryBillByLoginName(paramMap);
     }
 
@@ -64,6 +65,44 @@ public class BillServiceController {
     @ResponseBody
     public Result queryCommonInfo(HttpServletRequest request)throws Exception{
         return billService.queryCommonInfo();
+    }
+
+
+    /**
+     * 订单作废
+     * @param groupId
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/deleteOrder.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result deleteOrder(@RequestBody List<String> groupId, HttpServletRequest request) throws Exception{
+        Result result = Result.fail();
+        try {
+            result = billService.deleteOrder(groupId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResultMsg("订单作废失败");
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param orderId
+     * @param tacheCode
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/queryBillRejectReason.do",method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryBillRejectReason(@RequestParam("orderId") String orderId,
+                                        @RequestParam("tacheCode") String tacheCode)throws Exception{
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("orderId",orderId);
+        paramMap.put("tacheCode",tacheCode);
+        return billService.queryBillRejectReason(paramMap);
     }
 
     /**
@@ -81,7 +120,7 @@ public class BillServiceController {
 
     /**
      * 调度审核确定按钮
-     * @param groupId
+     * @param paramMap
      * @param request
      * @return
      * @throws Exception

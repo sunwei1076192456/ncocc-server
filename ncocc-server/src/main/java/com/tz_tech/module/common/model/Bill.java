@@ -80,9 +80,9 @@ public class Bill implements Serializable {
 
     private String remark;
 
-    private int loading_goods_addr;
+    private String loading_goods_addr;
 
-    private int unloading_goods_addr;
+    private String unloading_goods_addr;
 
     private String start_time;
 
@@ -103,6 +103,12 @@ public class Bill implements Serializable {
     private String iphone_res;
 
     private String handle_remark;
+
+    private String handle_point;
+
+    private String receive_goods_state;
+
+    private String good_pallet_code;
 
     public String getId() {
         return id;
@@ -384,19 +390,19 @@ public class Bill implements Serializable {
         this.remark = remark;
     }
 
-    public int getLoading_goods_addr() {
+    public String getLoading_goods_addr() {
         return loading_goods_addr;
     }
 
-    public void setLoading_goods_addr(int loading_goods_addr) {
+    public void setLoading_goods_addr(String loading_goods_addr) {
         this.loading_goods_addr = loading_goods_addr;
     }
 
-    public int getUnloading_goods_addr() {
+    public String getUnloading_goods_addr() {
         return unloading_goods_addr;
     }
 
-    public void setUnloading_goods_addr(int unloading_goods_addr) {
+    public void setUnloading_goods_addr(String unloading_goods_addr) {
         this.unloading_goods_addr = unloading_goods_addr;
     }
 
@@ -480,6 +486,30 @@ public class Bill implements Serializable {
         this.handle_remark = handle_remark;
     }
 
+    public String getHandle_point() {
+        return handle_point;
+    }
+
+    public void setHandle_point(String handle_point) {
+        this.handle_point = handle_point;
+    }
+
+    public String getReceive_goods_state() {
+        return receive_goods_state;
+    }
+
+    public void setReceive_goods_state(String receive_goods_state) {
+        this.receive_goods_state = receive_goods_state;
+    }
+
+    public String getGood_pallet_code() {
+        return good_pallet_code;
+    }
+
+    public void setGood_pallet_code(String good_pallet_code) {
+        this.good_pallet_code = good_pallet_code;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
@@ -530,6 +560,9 @@ public class Bill implements Serializable {
                 ", iphone='" + iphone + '\'' +
                 ", iphone_res='" + iphone_res + '\'' +
                 ", handle_remark='" + handle_remark + '\'' +
+                ", handle_point='" + handle_point + '\'' +
+                ", receive_goods_state='" + receive_goods_state + '\'' +
+                ", good_pallet_code='" + good_pallet_code + '\'' +
                 '}';
     }
 }

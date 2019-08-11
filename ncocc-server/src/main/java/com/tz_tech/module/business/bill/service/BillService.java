@@ -65,6 +65,11 @@ public class BillService {
         List<Map<String,Object>> roles = userDao.qryUserRoleByUserName(MapUtils.getString(paramMap,"loginName"));
         paramMap.put("role",MapUtils.getString(roles.get(0),"role"));
         List<Map<String,Object>> bills = billdao.queryBillsByLoginName(paramMap);
+
+        //查看是否被驳回
+        List<Map<String,Object>> rejectReason = billdao.isExistDisReject(paramMap);
+        covertOrderInfo(bills,rejectReason);
+
         //查询出单据总量
         Long totalCount = billdao.queryBillsCountBying(paramMap);
 
@@ -73,6 +78,35 @@ public class BillService {
         data.put("totalCount",totalCount);
         result = Result.success(data);
         return result;
+    }
+
+    private void covertOrderInfo(List<Map<String,Object>> bills,List<Map<String,Object>> rejectReason){
+        if(rejectReason != null && rejectReason.size() > 0){
+            for(Map<String,Object> bill : bills){
+                bill.put("isDisReject","N");
+                bill.put("isCarReject","N");
+                for(Map<String,Object> reject : rejectReason){
+                    if(MapUtils.getString(bill,"id","").equals(MapUtils.getString(reject,"id"))){
+                        if("1".equals(MapUtils.getString(reject,"workResult")) &&
+                            "HB-DD-SH".equals(MapUtils.getString(reject,"tacheCode"))){
+                            bill.put("isDisReject","Y");
+                            bill.put("disRejectTache","HB-DD-SH");
+                            break;
+                        }
+                    }
+                }
+                for(Map<String,Object> reject : bills){
+                    if(MapUtils.getString(bill,"id","").equals(MapUtils.getString(reject,"id"))){
+                        if("1".equals(MapUtils.getString(reject,"workResult")) &&
+                             "HB-CG-SH".equals(MapUtils.getString(reject,"tacheCode"))){
+                            bill.put("isCarReject","Y");
+                            bill.put("carRejectTache","HB-CG-SH");
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public Result queryCommonInfo() throws Exception{
@@ -99,6 +133,8 @@ public class BillService {
         List<Map<String,Object>> addrInfo = billdao.queryAddrInfo(null);
         //查询贸易类型 9
         List<Map<String,Object>> tradeType = billdao.queryDictById(Long.valueOf(9));
+        //查询省市区县
+        List<Map<String,Object>> district = (ArrayList)BaseInfoLoadFromDB.dispatcherMap.get("district");
         Map<String,Object> data = new HashMap<String, Object>();
         data.put("cust",cust);
         data.put("ship",ship);
@@ -111,6 +147,35 @@ public class BillService {
         data.put("addrInfo",addrInfo);
         data.put("shipName",shipName);
         data.put("tradeType",tradeType);
+        data.put("district",district);
+        result = Result.success(data);
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Result deleteOrder(List<String> groupId)throws Exception{
+        Result result = Result.fail();
+        if(groupId != null && groupId.size() > 0){
+            //作废订单
+            modifyOrderState("10R",groupId);//10R:退单
+            result = Result.success();
+        }else{
+            result.setResultMsg("请至少勾选一条记录作废!");
+        }
+        return result;
+    }
+
+    public void modifyOrderState(String state,List<String> orderIdList)throws Exception{
+        //
+        String[] order = orderIdList.toArray(new String[orderIdList.size()]);
+        billdao.updateOrderState(state,order);
+    }
+
+    public Result queryBillRejectReason(Map<String,Object> paramMap) throws Exception{
+        Result result = Result.fail();
+        List<Map<String,Object>> rejectReason = billdao.queryRejectReason(paramMap);
+        Map<String,Object> data = new HashMap<String, Object>();
+        data.put("rejectReasonList",rejectReason);
         result = Result.success(data);
         return result;
     }
