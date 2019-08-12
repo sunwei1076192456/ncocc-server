@@ -261,7 +261,7 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" shipname_code,voyage,containerbelong_code,");
         sb.append(" waybill,containernumber,containertype_code,unloading_goods_addr,contact,iphone,");
         sb.append(" loading_goods_addr,draw_container_addr,return_container_addr,");
-        sb.append(" receive_goods_state,handle_remark,");
+        sb.append(" receive_goods_state,handle_remark,start_time,end_time,");
         sb.append(" status,cusabbreviation,shipabbreviation from (");
         sb.append(" select woi.id as workOrderId,oo.id,oo.create_by,oo.create_at,");
         sb.append(" oo.status_id,oo.businesstype_code,oo.customer_id,oo.shipping_id,date_format(oo.sailingdate,'%Y-%m-%d') as sailingdate,");
@@ -269,9 +269,9 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" fci.containernumber,fci.containertype_code,fci.containerbelong_code,");
         //新增提箱地址，反箱地址,装货，卸货地址
         sb.append(" fhi.loading_goods_addr as loading_goods_addr,sa2.address_abbr as draw_container_addr,sa3.address_abbr as return_container_addr, ");
-        //新增提箱时间，返箱时间
-//        sb.append(" date_format(fci.draw_container_time,'%Y-%m-%d %H:%i:%s') as draw_container_time,date_format(fci.return_container_time,'%Y-%m-%d %H:%i:%s') as return_container_time,");
-//        sb.append(" date_format(fci.port_container_time,'%Y-%m-%d %H:%i:%s') as port_container_time,date_format(fci.ship_container_time,'%Y-%m-%d %H:%i:%s') as ship_container_time,");
+        //新增送货时间，装货时间
+        sb.append(" date_format(fhi.start_time,'%Y-%m-%d %H:%i:%s') as start_time,");
+        sb.append(" date_format(fhi.end_time,'%Y-%m-%d %H:%i:%s') as end_time,");
         //新增装卸备注
         sb.append(" fhi.receive_goods_state,fhi.handle_remark as handle_remark,");
         sb.append(" fhi.unloading_goods_addr as unloading_goods_addr,fhi.contact,fhi.iphone,");
