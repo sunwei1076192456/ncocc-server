@@ -46,4 +46,14 @@ public interface BillDao {
     List<Map<String,Object>> isExistDisReject(Map<String, Object> paramMap)throws Exception;
 
     void updateOrderState(String state,String[] orderIdList)throws Exception;
+
+    List<Map<String,Object>> queryBillForRH(Map<String, Object> paramMap)throws Exception;
+
+    String updateBillInfoForRH(String workOrderIds)throws Exception;
+
+    boolean checkIsExistGroupRela(String workOrderIds)throws Exception;
+
+    void saveGroupOrderRecord(Map<String, Object> paramMap)throws Exception;
+
+    void clearGroupOrderRecord(String workOrderIds)throws Exception;
 }

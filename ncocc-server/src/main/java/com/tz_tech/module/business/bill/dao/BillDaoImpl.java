@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.tz_tech.module.common.dao.CommonDao;
 import com.tz_tech.module.common.model.Bill;
 import com.tz_tech.module.common.model.OrderStaticData;
+import com.tz_tech.module.common.utils.ProcedureUtil;
 import com.tz_tech.module.common.utils.StringUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Repository;
@@ -505,5 +506,77 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         super.update(sql2,paramMap);
         super.update(sql1,paramMap);
         super.update(sql3,paramMap);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryBillForRH(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select oo.id,oo.waybill,oo.businesstype_code,");
+        sb.append(" fhi.loading_goods_addr,fhi.unloading_goods_addr,");
+        sb.append(" fhi.start_time,fhi.end_time,");
+        sb.append(" sa2.address_abbr as draw_container_addr,sa3.address_abbr as return_container_addr, ");
+        sb.append(" fci.containertype_code ");
+        sb.append(" from ff_work_order_ing woi ");
+        sb.append(" join ff_order oo on woi.order_id=oo.id ");
+        sb.append(" left join ff_container_info fci on fci.id=oo.id ");
+        sb.append(" left join ff_handling_info fhi on fhi.id=oo.id ");
+        sb.append(" left join sys_addr sa2 on sa2.addr_id=fci.draw_container_addr");//提箱地址
+        sb.append(" left join sys_addr sa3 on sa3.addr_id=fci.return_container_addr");//返箱地址
+        sb.append(" where woi.tache_id=:tacheId ");
+        sb.append(" and woi.executor_id=:loginName ");
+        sb.append(" and oo.businesstype_code <> :businessType ");
+//        sb.append(" and not exists (select gr.order_id from group_order_relation gr where gr.group_id=oo.group_id)");
+        return super.queryForList(sb.toString(),paramMap);
+    }
+
+    @Override
+    public String updateBillInfoForRH(String workOrderIds) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        String[] params = {"FF-GROUP-","out"};
+        Map<String,Object> ret = ProcedureUtil.executeProcedure(params,1,"generateSequence");
+        ret.put("out","FF-GROUP-" + MapUtils.getString(ret,"out"));
+        sb.append(" update ff_order fo set fo.isGroup=1,fo.group_id=:out ");
+        sb.append(" where fo.id in ('" + workOrderIds + "')");
+        super.update(sb.toString(),ret);
+        return MapUtils.getString(ret,"out","");
+    }
+
+    @Override
+    public boolean checkIsExistGroupRela(String workOrderIds) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select count(gor.id) from group_order_relation gor ");
+        sb.append(" where gor.order_id in ('" + workOrderIds + "')");
+        sb.append(" and gor.state='10A' ");
+        int ret = super.queryForInt(sb.toString(),new HashMap<>());
+        if(ret > 0){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void saveGroupOrderRecord(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" insert into group_order_relation(group_id,order_id,create_date) ");
+        sb.append(" values(:groupId,:orderId,sysdate())");
+        super.update(sb.toString(),paramMap);
+    }
+
+    @Override
+    public void clearGroupOrderRecord(String workOrderIds) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        StringBuffer sql = new StringBuffer();
+        StringBuffer str = new StringBuffer();
+        str.append(" select fo.group_id as groupId from ff_order fo where fo.id in ('" + workOrderIds + "')");
+        List<String> ret = super.queryForList(str.toString(),new HashMap<>(),String.class);
+        String groupIdList = StringUtils.getQryCondtion(ret.toArray(new String[ret.size()]),true);
+        sb.append(" update ff_order fo set fo.isGroup=0,fo.group_id=null ");
+        sb.append(" where fo.id in ('" + workOrderIds + "')");
+
+        sql.append(" update group_order_relation gor set gor.state='10P',gor.updated_date=sysdate() ");
+        sql.append(" where gor.group_id in " + groupIdList);
+
+        super.update(sb.toString(),new HashMap<>());
+        super.update(sql.toString(),new HashMap<>());
     }
 }

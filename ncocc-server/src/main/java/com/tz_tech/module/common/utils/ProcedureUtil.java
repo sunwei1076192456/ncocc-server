@@ -9,6 +9,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ProcedureUtil {
 
@@ -16,7 +17,7 @@ public class ProcedureUtil {
      * 执行存储过程
      * 无返回值，outParamStart=0
      */
-    public static void executeProcedure(final String[] params, final int outParamStart, String produceName) throws Exception{
+    public static Map<String, Object> executeProcedure(final String[] params, final int outParamStart, String produceName) throws Exception{
         final int paramLen = (params != null) ? params.length : 0;
         StringBuffer sb = new StringBuffer();
         sb.append(" CALL ").append(produceName).append("(").append(StringUtils.repeat("?", ",", paramLen)).append(")");
@@ -39,12 +40,12 @@ public class ProcedureUtil {
             }
         };
 
-        CallableStatementCallback<HashMap<String, Object>> callBack = new CallableStatementCallback<HashMap<String, Object>>() {
+        CallableStatementCallback<Map<String, Object>> callBack = new CallableStatementCallback<Map<String, Object>>() {
             @Override
-            public HashMap<String, Object> doInCallableStatement(CallableStatement cs)
+            public Map<String, Object> doInCallableStatement(CallableStatement cs)
                     throws SQLException, DataAccessException {
                 cs.execute();
-                HashMap<String, Object> map = new HashMap<String, Object>();
+                Map<String, Object> map = new HashMap<String, Object>();
                 if (params != null) {
                     for (int i = outParamStart; i < paramLen; i++) {
                         map.put(params[i], StringUtils.defaultString(cs.getString(i + 1)));
@@ -53,6 +54,6 @@ public class ProcedureUtil {
                 return map;
             }
         };
-        CommonHelper.getCommonDao().execute(csc, callBack);
+        return CommonHelper.getCommonDao().execute(csc, callBack);
     }
 }

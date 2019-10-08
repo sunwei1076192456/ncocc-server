@@ -238,4 +238,76 @@ public class BillService {
         return result;
     }
 
+    public Result queryBillForRH(Map<String,Object> paramMap)throws Exception{
+        Result result = Result.fail();
+
+        //查出可匹配的订单
+        List<Map<String,Object>> order = billdao.queryBillForRH(paramMap);
+
+        Map<String,Object> data = new HashMap<String, Object>();
+        data.put("order",order);
+        result = Result.success(data);
+        return result;
+    }
+
+    public Result confirmMatchOrder(List<String> groupId) throws Exception{
+        Result result = Result.fail();
+        if(groupId != null && groupId.size() > 0){
+            //list转为以逗号分隔的字符串
+            try {
+                //去重
+                Set<String> groupIdNew = new HashSet<>();
+                groupIdNew.addAll(groupId);
+                groupId.clear();
+                groupId.addAll(groupIdNew);
+                String ids = StringUtils.join(groupId.toArray(), "','");
+                if(!billdao.checkIsExistGroupRela(ids)){
+                    String group_id = billdao.updateBillInfoForRH(ids);
+                    for(String orderId : groupId){
+                        Map<String,Object> temp = new HashMap<>();
+                        temp.put("orderId",orderId);
+                        temp.put("groupId",group_id);
+                        billdao.saveGroupOrderRecord(temp);
+                    }
+                    result = Result.success();
+                }else{
+                    result.setResultMsg("请先清除融合记录!");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.setResultMsg("匹配失败!");
+            }
+        }else {
+            result.setResultMsg("请至少勾选一条记录匹配!");
+        }
+        return result;
+    }
+
+    public Result clearMatchOrder(List<String> groupId) throws Exception{
+        Result result = Result.fail();
+        if(groupId != null && groupId.size() > 0){
+            //list转为以逗号分隔的字符串
+            try {
+                //去重
+                Set<String> groupIdNew = new HashSet<>();
+                groupIdNew.addAll(groupId);
+                groupId.clear();
+                groupId.addAll(groupIdNew);
+                String ids = StringUtils.join(groupId.toArray(), "','");
+                if(billdao.checkIsExistGroupRela(ids)){
+                    billdao.clearGroupOrderRecord(ids);
+                    result = Result.success();
+                }else{
+                    result.setResultMsg("没有融合记录，无需清除!");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.setResultMsg("清除匹配失败!");
+            }
+        }else {
+            result.setResultMsg("请至少勾选一条记录匹配!");
+        }
+        return result;
+    }
+
 }

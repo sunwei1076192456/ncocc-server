@@ -136,4 +136,49 @@ public class BillServiceController {
         return billService.confirmDispatcherAudit(paramMap);
     }
 
+    /**
+     * 查询可供匹配的融合单
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/queryBillForRH.do",method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryBillForRH(@RequestParam("loginName") String loginName,  @RequestParam("id") String id,
+                                       @RequestParam("tacheId") String tacheId,@RequestParam("businessType") String businessType,HttpServletRequest request)throws Exception{
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("loginName",loginName);
+        paramMap.put("tacheId",tacheId);
+        paramMap.put("id",id);
+        paramMap.put("businessType",businessType);
+        return billService.queryBillForRH(paramMap);
+    }
+
+
+    /**
+     * 确认匹配-按钮
+     * @param matchGroupId
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/confirmMatchOrder.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result confirmMatchOrder(@RequestBody List<String> matchGroupId, HttpServletRequest request) throws Exception{
+        return billService.confirmMatchOrder(matchGroupId);
+    }
+
+    /**
+     * 清除匹配-按钮
+     * @param matchGroupId
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/clearMatchOrder.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result clearMatchOrder(@RequestBody List<String> matchGroupId, HttpServletRequest request) throws Exception{
+        return billService.clearMatchOrder(matchGroupId);
+    }
+
 }
