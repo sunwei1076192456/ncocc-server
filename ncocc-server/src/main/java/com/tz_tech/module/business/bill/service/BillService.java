@@ -135,6 +135,13 @@ public class BillService {
         List<Map<String,Object>> tradeType = billdao.queryDictById(Long.valueOf(9));
         //查询省市区县
         List<Map<String,Object>> district = (ArrayList)BaseInfoLoadFromDB.dispatcherMap.get("district");
+        //查询车队信息
+        List<Map<String,Object>> transportInfo = billdao.queryAllTransportInfo();
+        if(transportInfo != null && transportInfo.size() > 0){
+            for(Map<String,Object> trans : transportInfo){
+                trans.put("key",MapUtils.getString(trans,"id",""));
+            }
+        }
         Map<String,Object> data = new HashMap<String, Object>();
         data.put("cust",cust);
         data.put("ship",ship);
@@ -148,6 +155,7 @@ public class BillService {
         data.put("shipName",shipName);
         data.put("tradeType",tradeType);
         data.put("district",district);
+        data.put("transportInfo",transportInfo);
         result = Result.success(data);
         return result;
     }

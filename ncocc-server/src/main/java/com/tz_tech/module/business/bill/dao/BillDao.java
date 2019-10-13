@@ -56,4 +56,6 @@ public interface BillDao {
     void saveGroupOrderRecord(Map<String, Object> paramMap)throws Exception;
 
     void clearGroupOrderRecord(String workOrderIds)throws Exception;
+
+    List<Map<String,Object>> queryAllTransportInfo()throws Exception;
 }

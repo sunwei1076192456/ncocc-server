@@ -579,4 +579,14 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         super.update(sb.toString(),new HashMap<>());
         super.update(sql.toString(),new HashMap<>());
     }
+
+    @Override
+    public List<Map<String, Object>> queryAllTransportInfo() throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select id,name as label,contact_name,contact_phone,");
+        sb.append(" CONCAT_WS('-',contact_name,contact_phone) as description ");
+        sb.append(" from sys_transport_motorcade stm ");
+        sb.append(" where stm.state='10A' ");
+        return super.queryForList(sb.toString(),new HashMap<>());
+    }
 }
