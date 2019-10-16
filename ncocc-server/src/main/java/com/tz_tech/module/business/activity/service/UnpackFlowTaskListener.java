@@ -31,6 +31,8 @@ public class UnpackFlowTaskListener implements TaskListener {
                 dispatcher = getActivityService().dispatcherAudit(delegateTask.getExecution());
             }else if("HB-DD-PC".equals(execution.getCurrentActivityId())){
                 dispatcher = getActivityService().dispatcherAssignCar(delegateTask.getExecution());
+            }else if("HB-CG-SH".equals(execution.getCurrentActivityId())){
+                dispatcher = getActivityService().carManagerAudit(delegateTask.getExecution());
             }
             delegateTask.setAssignee(MapUtils.getString(dispatcher,"executor_name",""));
         } catch (Exception e) {

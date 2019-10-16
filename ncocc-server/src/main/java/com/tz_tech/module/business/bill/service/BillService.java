@@ -318,4 +318,42 @@ public class BillService {
         return result;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Result dispatcherAssign(Map<String,Object> paramMap) throws Exception{
+        Result result = Result.fail();
+        //插入订单-车队关联表
+        billdao.insertOrderTransportRela(paramMap);
+
+        //查询车队信息
+        Map<String,Object> trans = billdao.queryTransportInfoById(paramMap);
+        //回单
+        List<Map<String,Object>> processInstanceIdList = billdao.queryProcessInstanceIdById(MapUtils.getString(paramMap,"orderId"));
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("isPass",MapUtils.getInteger(trans,"type",0));
+        String processInstanceId = MapUtils.getString(processInstanceIdList.get(0),"processInstanceId","");
+        activityService.completeWorkOrder(processInstanceId,true,variables);
+
+        //查询该工单是否是融合单,处理融合单
+        if(isRHOrder(paramMap)){
+            List<Map<String,Object>> otherGroupOrder = billdao.queryGroupOrder(paramMap,true);
+            if(otherGroupOrder != null && otherGroupOrder.size() > 0){
+                for(Map<String,Object> order : otherGroupOrder){
+                    order.put("transportId",MapUtils.getInteger(paramMap,"transportId"));
+                    billdao.insertOrderTransportRela(order);
+
+                    //融合单回单
+                    List<Map<String,Object>> otherProcessInstanceIdList = billdao.queryProcessInstanceIdById(MapUtils.getString(order,"orderId"));
+                    String otherProcessInstanceId = MapUtils.getString(otherProcessInstanceIdList.get(0),"processInstanceId","");
+                    activityService.completeWorkOrder(otherProcessInstanceId,true,variables);
+                }
+            }
+        }
+        result = Result.success();
+        return result;
+    }
+
+    private boolean isRHOrder(Map<String,Object> paramMap) throws Exception{
+        return billdao.isGroupOrder(paramMap);
+    }
+
 }

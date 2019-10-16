@@ -28,6 +28,15 @@ public class BaseInfoLoadFromDB {
             dispatcherMap.put("dispatcher",dispatcher);
             log.info("=====调度员信息初始化完成=====");
         }
+
+        List<Map<String,Object>> carManager = CommonHelper.getCommonDao().queryForList("select su.login_name as executor_id,su.name as executor_name,sr.role as executor_type " +
+                "from sys_user su left join sys_user_role sur on sur.user_login_name=su.login_name left join " +
+                "sys_role sr on sr.id=sur.role_id where sr.id=6;",new HashMap<>());
+        if(null != dispatcher){
+            dispatcherMap.put("carManager",carManager);
+            log.info("=====车管员信息初始化完成=====");
+        }
+
         //初始化省市区县信息
         List<Map<String,Object>> districtInfo = initDistrict();
         if(districtInfo != null && districtInfo.size() != 0){

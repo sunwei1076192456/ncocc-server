@@ -105,12 +105,45 @@ public class ActivityService {
         return dispatcher;
     }
 
+    /**
+     * 调度派车
+     * @param execution
+     * @return
+     * @throws Exception
+     */
     public Map<String,Object> dispatcherAssignCar(DelegateExecution execution)throws Exception{
         log.info("====进入调度员派车环节====");
         String orderId = (String) execution.getVariable("orderId");
         //查出下一环节执行人--调度员（多个调度员的话就随机）
         Long processInstanceId = Long.valueOf(execution.getProcessInstanceId());
         List dispatcherList = (ArrayList)BaseInfoLoadFromDB.dispatcherMap.get("dispatcher");
+        Long index = processInstanceId % dispatcherList.size();
+        Map<String,Object> dispatcher = (HashMap<String, Object>)dispatcherList.get(index.intValue());
+        //查询环节流程
+        Map<String,Object> tache = billDao.queryTacheByActiviId(execution.getCurrentActivityId());
+        //往流程表里插一条接单记录ff_flow_msg
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("id",orderId);
+        paramMap.putAll(dispatcher);
+        paramMap.putAll(tache);
+        paramMap.put("processInstanceId",execution.getProcessInstanceId());
+        Map<String,Object> flowReq = getRequestForFlow(paramMap);
+        billDao.insertFlowMsg(flowReq);
+        return dispatcher;
+    }
+
+    /**
+     * 车管审核
+     * @param execution
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> carManagerAudit(DelegateExecution execution)throws Exception{
+        log.info("====进入车管审核环节====");
+        String orderId = (String) execution.getVariable("orderId");
+        //查出下一环节执行人--车管员（多个车管员的话就随机）
+        Long processInstanceId = Long.valueOf(execution.getProcessInstanceId());
+        List dispatcherList = (ArrayList)BaseInfoLoadFromDB.dispatcherMap.get("carManager");
         Long index = processInstanceId % dispatcherList.size();
         Map<String,Object> dispatcher = (HashMap<String, Object>)dispatcherList.get(index.intValue());
         //查询环节流程

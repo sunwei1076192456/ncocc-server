@@ -181,4 +181,24 @@ public class BillServiceController {
         return billService.clearMatchOrder(matchGroupId);
     }
 
+    /**
+     * 调度派车按钮
+     * @param paramMap
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/dispatcherAssign.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result dispatcherAssign(@RequestBody Map<String,Object> paramMap, HttpServletRequest request) throws Exception{
+        Result result = Result.fail();
+        try {
+            result = billService.dispatcherAssign(paramMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result.setResultMsg("派车失败");
+        }
+        return result;
+    }
+
 }

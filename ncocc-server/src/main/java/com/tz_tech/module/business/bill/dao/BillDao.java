@@ -58,4 +58,12 @@ public interface BillDao {
     void clearGroupOrderRecord(String workOrderIds)throws Exception;
 
     List<Map<String,Object>> queryAllTransportInfo()throws Exception;
+
+    void insertOrderTransportRela(Map<String, Object> paramMap)throws Exception;
+
+    List<Map<String,Object>> queryGroupOrder(Map<String, Object> paramMap,boolean flag)throws Exception;
+
+    boolean isGroupOrder(Map<String, Object> paramMap)throws Exception;
+
+    Map<String,Object> queryTransportInfoById(Map<String, Object> paramMap)throws Exception;
 }

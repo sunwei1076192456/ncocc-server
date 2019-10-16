@@ -589,4 +589,50 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" where stm.state='10A' ");
         return super.queryForList(sb.toString(),new HashMap<>());
     }
+
+    @Override
+    public void insertOrderTransportRela(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        StringBuffer sql = new StringBuffer();
+        sql.append(" update ff_order_transport set state='10P' where order_id=:orderId ");
+        super.update(sql.toString(),paramMap);
+
+        sb.append(" insert into ff_order_transport(order_id,transport_id,create_date)");
+        sb.append(" values(:orderId,:transportId,sysdate())");
+        super.update(sb.toString(),paramMap);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryGroupOrder(Map<String, Object> paramMap, boolean flag) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select gor.order_id as orderId ");
+        sb.append(" from ff_order ff ");
+        sb.append(" left join group_order_relation gor on gor.group_id=ff.group_id ");
+        sb.append(" where ff.id=:orderId ");
+        sb.append(" and gor.state='10A' ");
+        if(flag){
+            sb.append(" and gor.order_id <> :orderId ");
+        }
+        List<Map<String, Object>> ret = super.queryForList(sb.toString(),paramMap);
+        return ret;
+    }
+
+    @Override
+    public boolean isGroupOrder(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select isGroup from ff_order where id=:orderId ");
+        Map<String,Object> ret = super.queryForMap(sb.toString(),paramMap);
+        if("1".equals(MapUtils.getString(ret,"isGroup",""))){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Map<String, Object> queryTransportInfoById(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select id,name,contact_name,contact_phone,type from sys_transport_motorcade ");
+        sb.append(" where id=:transportId and state='10A' ");
+        return super.queryForMap(sb.toString(),paramMap);
+    }
 }
