@@ -25,11 +25,18 @@ public class UserDaoImpl extends CommonDao implements UserDao
 	@Override
 	public Map<String,Object> qryUserByUserName(User user) throws Exception {
 		StringBuffer sb = new StringBuffer();
-		sb.append(" select id,name,login_name,password,email,phone,active,active_date,expired_date ");
-		sb.append(" from sys_user where login_name = :login_name ");
+		sb.append(" select su.id,su.name,su.login_name,su.password,su.email,su.phone,su.active,su.active_date,su.expired_date, ");
+		sb.append(" sr.role from sys_user su ");
+		sb.append(" left join sys_user_role sur on su.login_name=sur.user_login_name ");
+		sb.append(" left join sys_role sr on sr.id=sur.role_id ");
+		sb.append(" where login_name = :login_name ");
 		Map<String,Object> paramMap = new HashMap<String,Object>();
 		paramMap.put("login_name", user.getLoginName());
-		return super.queryForMap(sb.toString(), paramMap);
+		List<Map<String,Object>> ret = super.queryForList(sb.toString(),paramMap);
+		if(ret != null){
+			return ret.get(0);
+		}
+		return null;
 	}
 
 	/*

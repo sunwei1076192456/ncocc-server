@@ -66,6 +66,7 @@ public class UserManagerService {
         String accessToken = TokenUtils.createToken(user);
         Map<String,Object> data = new HashMap<String, Object>();
         data.put("access_token",accessToken);
+        data.put("role",MapUtils.getString(userMap, "role"));
         loginResult = Result.success(data);
         return loginResult;
     }
