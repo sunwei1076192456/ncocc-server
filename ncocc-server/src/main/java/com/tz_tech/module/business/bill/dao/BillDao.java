@@ -19,7 +19,11 @@ public interface BillDao {
 
     List<Map<String,Object>> queryBillsByLoginName(Map<String, Object> paramMap) throws Exception;
 
+    List<Map<String,Object>> queryBillByCondition(Map<String, Object> paramMap) throws Exception;
+
     Long queryBillsCountBying(Map<String, Object> paramMap) throws Exception;
+
+    Long queryBillsCountByCondition(Map<String, Object> paramMap) throws Exception;
 
     List<Map<String,Object>> queryAllCusInfo()throws Exception;
 
@@ -66,4 +70,8 @@ public interface BillDao {
     boolean isGroupOrder(Map<String, Object> paramMap)throws Exception;
 
     Map<String,Object> queryTransportInfoById(Map<String, Object> paramMap)throws Exception;
+
+    List<Map<String,Object>> queryOrderTransportRela(Map<String, Object> paramMap)throws Exception;
+
+    void updateOrderTransportRelaState(Map<String, Object> paramMap)throws Exception;
 }

@@ -109,6 +109,20 @@ public class BillService {
         }
     }
 
+    public Result queryBillByCondition(Map<String,Object> paramMap) throws Exception{
+        Result result = Result.fail();
+        List<Map<String,Object>> roles = userDao.qryUserRoleByUserName(MapUtils.getString(paramMap,"loginName"));
+        paramMap.put("role",MapUtils.getString(roles.get(0),"role"));
+        List<Map<String,Object>> bills = billdao.queryBillByCondition(paramMap);
+        //查询出单据总量
+        Long totalCount = billdao.queryBillsCountByCondition(paramMap);
+        Map<String,Object> data = new HashMap<String, Object>();
+        data.put("bill",bills);
+        data.put("totalCount",totalCount);
+        result = Result.success(data);
+        return result;
+    }
+
     public Result queryCommonInfo() throws Exception{
         Result result = Result.fail();
         //查客户信息
@@ -348,6 +362,55 @@ public class BillService {
                 }
             }
         }
+        result = Result.success();
+        return result;
+    }
+
+    public Result queryOrderTransportRela(Map<String,Object> paramMap)throws Exception{
+        Result result = Result.fail();
+        //查询订单的车辆信息
+        List<Map<String,Object>> transportInfo = billdao.queryOrderTransportRela(paramMap);
+        Map<String,Object> data = new HashMap<String, Object>();
+        data.put("transportInfo",transportInfo);
+        result = Result.success(data);
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Result confirmCarAudit(Map<String,Object> paramMap)throws Exception{
+        Result result = Result.fail();
+        //写入审核结果 0:通过  1：不通过
+        billdao.updateWorkOrderResult(paramMap);
+
+        //驳回的话需要把当前的车辆信息改成失效状态
+        if("1".equals(MapUtils.getString(paramMap,"auditResult"))){
+            paramMap.put("state","10P");
+            billdao.updateOrderTransportRelaState(paramMap);
+        }
+
+        //回单
+        List<Map<String,Object>> processInstanceIdList = billdao.queryProcessInstanceIdById(MapUtils.getString(paramMap,"orderId"));
+        Map<String,Object> variables = new HashMap<>();
+        variables.put("isPass",MapUtils.getInteger(paramMap,"auditResult"));
+        String processInstanceId = MapUtils.getString(processInstanceIdList.get(0),"processInstanceId","");
+        activityService.completeWorkOrder(processInstanceId,true,variables);
+
+        //查询该工单是否是融合单,处理融合单
+        if(isRHOrder(paramMap)){
+            List<Map<String,Object>> otherGroupOrder = billdao.queryGroupOrder(paramMap,true);
+            if(otherGroupOrder != null && otherGroupOrder.size() > 0){
+                for(Map<String,Object> order : otherGroupOrder){
+                    //融合单回单---一起审核通过
+                    if("1".equals(MapUtils.getString(paramMap,"auditResult"))){
+                        billdao.updateOrderTransportRelaState(paramMap);
+                    }
+                    List<Map<String,Object>> otherProcessInstanceIdList = billdao.queryProcessInstanceIdById(MapUtils.getString(order,"orderId"));
+                    String otherProcessInstanceId = MapUtils.getString(otherProcessInstanceIdList.get(0),"processInstanceId","");
+                    activityService.completeWorkOrder(otherProcessInstanceId,true,variables);
+                }
+            }
+        }
+
         result = Result.success();
         return result;
     }

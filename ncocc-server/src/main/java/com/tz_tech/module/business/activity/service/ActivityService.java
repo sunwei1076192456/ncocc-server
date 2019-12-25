@@ -160,6 +160,36 @@ public class ActivityService {
     }
 
     /**
+     * 工单归档
+     * @param execution
+     * @return
+     * @throws Exception
+     */
+    public Map<String,Object> orderReport(DelegateExecution execution)throws Exception{
+        log.info("====进入工单归档环节====");
+        String orderId = (String) execution.getVariable("orderId");
+        //查出下一环节执行人--归档环节默认sys
+        Long processInstanceId = Long.valueOf(execution.getProcessInstanceId());
+        Map<String,Object> dispatcher = new HashMap<String, Object>();
+        dispatcher.put("executor_id","sys");
+        dispatcher.put("executor_name","系统自动");
+        dispatcher.put("executor_type","systerm");
+        //查询环节流程
+        Map<String,Object> tache = billDao.queryTacheByActiviId(execution.getCurrentActivityId());
+        //往流程表里插一条接单记录ff_flow_msg
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("id",orderId);
+        paramMap.putAll(dispatcher);
+        paramMap.putAll(tache);
+        paramMap.put("processInstanceId",execution.getProcessInstanceId());
+        Map<String,Object> flowReq = getRequestForFlow(paramMap);
+        billDao.insertFlowMsg(flowReq);
+        return dispatcher;
+    }
+
+
+
+    /**
      * 构造插入流程表的参数
      * @return
      */

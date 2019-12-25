@@ -8,6 +8,8 @@ import com.tz_tech.module.common.utils.ConstantUtil;
 import com.tz_tech.module.common.utils.ProcedureUtil;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.math.ec.ScaleYPointMap;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +69,15 @@ public class ConsumerThread implements Runnable {
                             String[] params = {String.valueOf(workOrderId),MapUtils.getString(consumeMap,"serial_id"),"out_succ_flag","out_error_msg"};
                             //调用存过插入在途表,同时把流程表的状态更新为10F
                             ProcedureUtil.executeProcedure(params,2,"create_work_order_ing");
+
+                            //是否自动回单
+                            if("HB-GD".equals(MapUtils.getString(send_content,"tache_code"))){
+                                //归档环节自动--存储过程
+                                System.out.println("进入归档存过===");
+                                System.out.println("order==" + orderId);
+                                String[] reportParam = {orderId,"out"};
+                                ProcedureUtil.executeProcedure(reportParam,1,"order_report");
+                            }
                         }
                     } catch (Exception e) {
                         log.error("生成流程失败,e=" + e.getMessage());

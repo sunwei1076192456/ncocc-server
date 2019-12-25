@@ -56,6 +56,23 @@ public class BillServiceController {
     }
 
     /**
+     * 单据查询
+     * 查询在途库
+     */
+    @RequestMapping(value = "/queryBillByCondition.do",method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryBillByCondition(@RequestParam("loginName") String loginName,  @RequestParam("page") String page,
+                                       @RequestParam("pageSize") String pageSize,@RequestParam(value="waybill",required=false) String waybill,
+                                       HttpServletRequest request)throws Exception{
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("loginName",loginName);
+        paramMap.put("page",Long.valueOf(page));
+        paramMap.put("pageSize",Long.valueOf(pageSize));
+        paramMap.put("waybill",waybill);
+        return billService.queryBillByCondition(paramMap);
+    }
+
+    /**
      * 查询共用信息
      * @param request
      * @return
@@ -199,6 +216,33 @@ public class BillServiceController {
             result.setResultMsg("派车失败");
         }
         return result;
+    }
+
+    /**
+     * 查询订单的车辆信息
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/queryOrderTransportRela.do",method = RequestMethod.GET)
+    @ResponseBody
+    public Result queryOrderTransportRela(@RequestParam("orderId") String orderId, HttpServletRequest request)throws Exception{
+        Map<String,Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("orderId",orderId);
+        return billService.queryOrderTransportRela(paramMap);
+    }
+
+    /**
+     * 车管审核确定按钮
+     * @param paramMap
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/carAudit.do",method = RequestMethod.POST)
+    @ResponseBody
+    public Result carAudit(@RequestBody Map<String,Object> paramMap, HttpServletRequest request) throws Exception{
+        return billService.confirmCarAudit(paramMap);
     }
 
 }

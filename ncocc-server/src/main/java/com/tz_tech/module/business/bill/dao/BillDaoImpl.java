@@ -263,6 +263,7 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" waybill,containernumber,containertype_code,unloading_goods_addr,contact,iphone,");
         sb.append(" loading_goods_addr,draw_container_addr,return_container_addr,");
         sb.append(" receive_goods_state,handle_remark,start_time,end_time,");
+        sb.append(" transport_id,transport_name,transport_contact_name,transport_contact_phone,");
         sb.append(" status,cusabbreviation,shipabbreviation from (");
         sb.append(" select woi.id as workOrderId,oo.id,oo.create_by,oo.create_at,");
         sb.append(" oo.status_id,oo.businesstype_code,oo.customer_id,oo.shipping_id,date_format(oo.sailingdate,'%Y-%m-%d') as sailingdate,");
@@ -276,6 +277,8 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         //新增装卸备注
         sb.append(" fhi.receive_goods_state,fhi.handle_remark as handle_remark,");
         sb.append(" fhi.unloading_goods_addr as unloading_goods_addr,fhi.contact,fhi.iphone,");
+        //新增车辆信息
+        sb.append(" fot.transport_id,stm.name as transport_name,stm.contact_name as transport_contact_name,stm.contact_phone as transport_contact_phone,");
         sb.append(" dtd.tache_name as status,uc.abbreviation as cusabbreviation,us.abbreviation as shipabbreviation from ff_work_order_ing woi ");
         sb.append(" left join ff_order oo on woi.order_id=oo.id ");
         sb.append(" left join dict_tache_define dtd on dtd.tache_id=woi.tache_id ");
@@ -287,6 +290,8 @@ public class BillDaoImpl extends CommonDao implements BillDao {
 //        sb.append(" left join sys_addr sa1 on sa1.addr_id=fhi.loading_goods_addr");//装货地址
         sb.append(" left join sys_addr sa2 on sa2.addr_id=fci.draw_container_addr");//提箱地址
         sb.append(" left join sys_addr sa3 on sa3.addr_id=fci.return_container_addr");//返箱地址
+        sb.append(" left join ff_order_transport fot on fot.order_id=oo.id and fot.state='10A' ");
+        sb.append(" left join sys_transport_motorcade stm on stm.id=fot.transport_id and stm.state='10A' ");
         String role = MapUtils.getString(paramMap,"role","");
         switch (role){
             case "management":
@@ -301,6 +306,9 @@ public class BillDaoImpl extends CommonDao implements BillDao {
             case "dispatcher":
                 sb.append(" where woi.executor_id=:loginName ");
                 break;
+            default:
+                sb.append(" where woi.executor_id=:loginName ");
+                break;
         }
         if(!"".equals(MapUtils.getString(paramMap,"waybill",""))){
             sb.append(" and oo.waybill like '%" + MapUtils.getString(paramMap,"waybill") + "%' ");
@@ -310,6 +318,68 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         }
         if(!"".equals(MapUtils.getString(paramMap,"businessType",""))){
             sb.append(" and oo.businesstype_code in (" + MapUtils.getString(paramMap,"businessType","") + ")");
+        }
+        sb.append(" order by receive_goods_state,sailingdate ");
+        sb.append(") as lo limit :fromPageSize,:pageSize ");
+        paramMap.put("fromPageSize",(MapUtils.getLong(paramMap,"page")-1)*MapUtils.getLong(paramMap,"pageSize"));
+        return super.queryForList(sb.toString(),paramMap);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryBillByCondition(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select id,create_by,create_at,operator,");
+        sb.append(" status_id,businesstype_code,customer_id,shipping_id,sailingdate,");
+        sb.append(" shipname_code,voyage,containerbelong_code,");
+        sb.append(" waybill,containernumber,containertype_code,unloading_goods_addr,contact,iphone,");
+        sb.append(" loading_goods_addr,draw_container_addr,return_container_addr,");
+        sb.append(" receive_goods_state,handle_remark,start_time,end_time,");
+        sb.append(" status,cusabbreviation,shipabbreviation from (");
+        sb.append(" select oo.id,oo.create_by,oo.create_at,");
+        sb.append(" case when oo.status_id='10F' then '' else su.name end as operator, ");
+        sb.append(" oo.status_id,oo.businesstype_code,oo.customer_id,oo.shipping_id,date_format(oo.sailingdate,'%Y-%m-%d') as sailingdate,");
+        sb.append(" oo.shipname_code,oo.voyage,oo.waybill,");
+        sb.append(" fci.containernumber,fci.containertype_code,fci.containerbelong_code,");
+        //新增提箱地址，反箱地址,装货，卸货地址
+        sb.append(" fhi.loading_goods_addr as loading_goods_addr,sa2.address_abbr as draw_container_addr,sa3.address_abbr as return_container_addr, ");
+        //新增送货时间，装货时间
+        sb.append(" date_format(fhi.start_time,'%Y-%m-%d %H:%i:%s') as start_time,");
+        sb.append(" date_format(fhi.end_time,'%Y-%m-%d %H:%i:%s') as end_time,");
+        //新增装卸备注
+        sb.append(" fhi.receive_goods_state,fhi.handle_remark as handle_remark,");
+        sb.append(" fhi.unloading_goods_addr as unloading_goods_addr,fhi.contact,fhi.iphone,");
+        sb.append(" case when oo.status_id='10F' then '已归档' else dtd.tache_name end as status, ");
+        sb.append(" uc.abbreviation as cusabbreviation,us.abbreviation as shipabbreviation ");
+        sb.append(" from ff_order oo ");
+        sb.append(" left join ff_work_order_ing woi on woi.order_id=oo.id ");
+        sb.append(" left join dict_tache_define dtd on dtd.tache_id=woi.tache_id ");
+        sb.append(" left join user_customer uc on uc.id=oo.customer_id ");
+        sb.append(" left join user_shipping us on us.id=oo.shipping_id ");
+        sb.append(" left join ff_container_info fci on fci.id=oo.id ");
+        sb.append(" left join ff_handling_info fhi on fhi.id=oo.id ");
+        sb.append(" left join sys_addr sa2 on sa2.addr_id=fci.draw_container_addr");//提箱地址
+        sb.append(" left join sys_addr sa3 on sa3.addr_id=fci.return_container_addr");//返箱地址
+        sb.append(" left join sys_user su on su.login_name=woi.executor_id ");
+        String role = MapUtils.getString(paramMap,"role","");
+        switch (role){
+            case "management":
+                sb.append(" where 1=1 ");
+                break;
+            case "operatorLeader":
+                sb.append(" where 1=1 ");//---后续已区域来区分，每个调度经理能看到各自区域下的单子
+                break;
+            case "operator":
+                sb.append(" where oo.create_by=:loginName ");
+                break;
+            case "dispatcher":
+                sb.append(" where 1=1  ");
+                break;
+            default:
+                sb.append(" where oo.create_by=:loginName ");
+                break;
+        }
+        if(!"".equals(MapUtils.getString(paramMap,"waybill",""))){
+            sb.append(" and oo.waybill like '%" + MapUtils.getString(paramMap,"waybill") + "%' ");
         }
         sb.append(" order by receive_goods_state,sailingdate ");
         sb.append(") as lo limit :fromPageSize,:pageSize ");
@@ -367,6 +437,9 @@ public class BillDaoImpl extends CommonDao implements BillDao {
             case "dispatcher":
                 sb.append(" where woi.executor_id=:loginName ");
                 break;
+            default:
+                sb.append(" where woi.executor_id=:loginName ");
+                break;
         }
         if(!"".equals(MapUtils.getString(paramMap,"waybill",""))){
             sb.append(" and oo.waybill like '%" + MapUtils.getString(paramMap,"waybill") + "%' ");
@@ -376,6 +449,35 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         }
         if(!"".equals(MapUtils.getString(paramMap,"businessType",""))){
             sb.append(" and oo.businesstype_code in (" + MapUtils.getString(paramMap,"businessType","") + ")");
+        }
+        return super.queryForObject(sb.toString(),paramMap,Long.class);
+    }
+
+    @Override
+    public Long queryBillsCountByCondition(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select count(1) ");
+        sb.append(" from ff_order oo ");
+        String role = MapUtils.getString(paramMap,"role","");
+        switch (role){
+            case "management":
+                sb.append(" where 1=1 ");
+                break;
+            case "operatorLeader":
+                sb.append(" where 1=1 ");
+                break;       //---后续已区域来区分，每个调度经理能看到各自区域下的单子
+            case "operator":
+                sb.append(" where oo.create_by=:loginName ");
+                break;
+            case "dispatcher":
+                sb.append(" where 1=1  ");
+                break;
+            default:
+                sb.append(" where oo.create_by=:loginName ");
+                break;
+        }
+        if(!"".equals(MapUtils.getString(paramMap,"waybill",""))){
+            sb.append(" and instr(oo.waybill,:waybill) > 0 ");
         }
         return super.queryForObject(sb.toString(),paramMap,Long.class);
     }
@@ -479,6 +581,10 @@ public class BillDaoImpl extends CommonDao implements BillDao {
                 sb.append(" where woi.executor_id=:loginName");
                 break;
             case "dispatcher":
+                sb.append(" left join ff_work_order foo on foo.order_id=woi.order_id and foo.tache_code in('HB-CG-SH') ");
+                sb.append(" where woi.executor_id=:loginName");
+                break;
+            default:
                 sb.append(" left join ff_work_order foo on foo.order_id=woi.order_id and foo.tache_code in('HB-CG-SH') ");
                 sb.append(" where woi.executor_id=:loginName");
                 break;
@@ -634,5 +740,22 @@ public class BillDaoImpl extends CommonDao implements BillDao {
         sb.append(" select id,name,contact_name,contact_phone,type from sys_transport_motorcade ");
         sb.append(" where id=:transportId and state='10A' ");
         return super.queryForMap(sb.toString(),paramMap);
+    }
+
+    @Override
+    public List<Map<String, Object>> queryOrderTransportRela(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" select stm.id,stm.name,stm.contact_name,stm.contact_phone ");
+        sb.append(" from ff_order_transport fot ");
+        sb.append(" left join sys_transport_motorcade stm on stm.id=fot.transport_id and stm.state='10A' ");
+        sb.append(" where fot.order_id=:orderId and fot.state='10A' ");
+        return super.queryForList(sb.toString(),paramMap);
+    }
+
+    @Override
+    public void updateOrderTransportRelaState(Map<String, Object> paramMap) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append(" update ff_order_transport set state=:state where order_id=:orderId and state='10A' ");
+        super.update(sb.toString(),paramMap);
     }
 }
